@@ -74,7 +74,7 @@
 
 #### Fields
 | Field | Meaning |
-|;------ | ;------- |
+|------ | ------- |
 | [Type](#type) | Type of packet |
 | [Port](#port) | Port that will be used to communicate |
 | [Interval](#interval) | Time interval between stream packets |
@@ -84,7 +84,7 @@
 | [Group ID](#groups-id) | Indicates the ID of a group |
 | [M. name size](#movie) | Indicates the length of the movie name in bytes |
 | [Movie name](#movie) | Name of the movie |
-| [F](#flag) | Flag to indicate wheter the client could connect to the server |
+| [F](#flag) | Flag to indicate whether the client could connect to the server |
 | ... | In packets with variable size, the dots represents the remaining elements |
 
 ##### Type
@@ -92,7 +92,7 @@ Each message has a type to indicate the operation type and each type is a power 
 two. The flags and it's values are listed in the table below:
 
 | Type | Packet |
-| ;--- | ;------ |
+| --- | ------ |
 | 0x01 | [New group request](#new-group-request) |
 | 0x02 | [Create group ok/nok](#create-group-ok/nok) |
 | 0x04 | [Enter group request](#enter-group-request) |
