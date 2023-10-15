@@ -277,4 +277,6 @@ Estrutura de arquivos:
 * [ ] Vai precisar confirmar os pacotes de controle e tratar pacotes de controle
   retransmitidos
 
-* Mudar os fluxogramas para inglês
+* [ ] Mudar os fluxogramas para inglês
+
+* [ ] Protocol: handshake líder -> registration -> stream
