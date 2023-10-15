@@ -212,6 +212,7 @@ the client by overloading them with requests/responses.
 
 ### Client
 ![client](./images/client.png)
+
 To avoid trying to connect indefinitly to the server, the client has a limit to
 the number of attempts to try to establish the handshake.
 
@@ -270,3 +271,10 @@ Estrutura de arquivos:
 * [ ] Create group OK/NOK de alguém que não é o líder
 
 * [ ] Como sincronizar a tranmissão de um mesmo stream para múltiplos clientes?
+
+* [ ] Vai ter que ter o ack pelo menos para o handshake e pacotes de
+  controle.Talvez para a transmissão seja mais fácil com o ack também
+* [ ] Vai precisar confirmar os pacotes de controle e tratar pacotes de controle
+  retransmitidos
+
+* Mudar os fluxogramas para inglês
