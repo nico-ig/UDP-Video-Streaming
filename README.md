@@ -8,7 +8,7 @@ When the movie has finished being streamed, the session between the group and
 the server will be closed.
 
 ## Handshake
-![handshake](./Images/handshake.png)
+![handshake](./images/handshake.png)
 
 The handshake process can be described as follows:
 1. A leader client sends a request to initiate a new group to the server, with
@@ -215,3 +215,23 @@ the number of attempts to try to establish the handshake.
 ## Watchdog
 ## Log
 ## Project structure
+Estrutura de arquivos:
+```
+/ 
+|-----main.py 
+|-----/images
+|-----/movies
+|-----/server
+|       |-----server-main.py
+|       |-----server-handshake.py
+|       |-----server-streaming.py
+|
+|-----/client
+|       |-----client-main.py
+|       |-----client-handshake.py
+|       |-----client-streaming.py
+|
+|-----/utils
+        |-----watchdog.py
+        |-----log.py
+```
