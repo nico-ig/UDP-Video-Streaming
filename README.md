@@ -73,29 +73,42 @@ two. The flags and it's values are listed in the table below:
 | 0x20 | [Enter group received](#enter-group-received) |
 | 0x40 | [Group created](#group-created) |
 
+If a packet with another type is received, it should be discarded without notice
+to the sender.
+
 ##### Port
 During the negotiation phase, the port field is used to determine which port
 will be used in communication by both the server and the client. After
 succesfully binding to a commom port, the communication between the server and
 the client will occur through it. The server will send it's packets throgh the
 new port and expect new packets from the client to arrive though the new port. 
-The client will close the socket to the standart port.
+The client will close the socket to the standard port.
 
 ##### Interval
 A interval time in microseconds between stream packets can be set, both the server 
 and the clients can set a interval time. During handshake it's value will be 
 chosen by taking the biggest value set by the server and the clients in the 
-trasmission group.
+trasmission group. If the client wishes to use the interval in the server, this
+field should be of zero.
+The server must have a default interval time.
 
 ##### Members
 Each group has a set of members that are identified by it's IPv4 addressess.
 During handshake the leader member (the one to initiate the handshake process),
 will send the amount of members that are expected to join and the IPv4 address
-of each member.
+of each member. The member count is at least one, since at least the leader
+member is expected to join the group.
 
 ##### Movie
 Each movie is represented by a ID. During the handshake the movie to be streamed 
-is chosen by the leader member.
+is chosen by the leader member. The server should have at least one movie available.
+
+##### Group ID
+During the handshake process, the server will chose a id to the new group and
+send it to the leader member. All other members should send the request with
+this field to the value received by the leader member. If a client send a
+request with a group that it isn't allowed to enter, the packet will be
+discarded without notice.
 
 ##### Flag
 At the end of the handshake, the flag field indicates whether the client could
@@ -188,14 +201,17 @@ the client by overloading them with requests/responses.
 * The handshake phase has an overhead in the packets send and in the retries when
   the client can't bind to the same port as the server.
 * It works only for IPv4 addresses.
+* If the server reaches it's maximum number of simultaneaous groups streamings,
+  new requests are dicarded and the client won't know the reason, only that it
+  didn't receive an answer from server.
 
 # Implementation
 ## Server
 ## Client
-
 To avoid trying to connect indefinitly to the server, the client has a limit to
 the number of attempts to try to establish the handshake.
 
 ## Sockets
 ## Watchdog
 ## Log
+## Project structure
