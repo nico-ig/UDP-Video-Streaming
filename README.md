@@ -206,32 +206,67 @@ the client by overloading them with requests/responses.
   didn't receive an answer from server.
 
 # Implementation
-## Server
-## Client
+## Modules
+### Server
+![server](./images/server.png)
+
+### Client
+![client](./images/client.png)
 To avoid trying to connect indefinitly to the server, the client has a limit to
 the number of attempts to try to establish the handshake.
 
-## Sockets
-## Watchdog
-## Log
+### Sockets
+### Watchdog
+### Log
+### Statistics
+
+## Tests
 ## Project structure
 Estrutura de arquivos:
 ```
 / 
 |-----main.py 
+|-----/tests
 |-----/images
 |-----/movies
 |-----/server
-|       |-----server-main.py
-|       |-----server-handshake.py
-|       |-----server-streaming.py
+|       |-----main.py
+|       |-----handshake.py
+|       |-----streaming.py
+|       |-----registration.py
 |
 |-----/client
-|       |-----client-main.py
-|       |-----client-handshake.py
-|       |-----client-streaming.py
+|       |-----main.py
+|       |-----handshake.py
+|       |-----streaming.py
+|       |-----registration.py
 |
 |-----/utils
         |-----watchdog.py
         |-----log.py
+        |-----statistics.py
 ```
+
+# TODO/Questionamentos
+* [ ] Talvez seja melhor alocar uma porta para o grupo, negociada só com o líder
+  e os outros clientes acessam ela, cria um novo processo. Fase de criar o
+  grupo, novo processo para esperar o registro dos outros membros. (limitação: a
+  porta é negociada só com o líder, talvez algum cliente não possa usar ela)
+* [ ] Espera os outros membros na transmissão nova
+* [ ] Na transmissão colocar a etapa de registro, o líder manda a lista nessa
+  etapa
+* [ ] A parte de escolher o intervalo vai ter que ir para o registration
+* [ ] Intervalo muito alto
+* [ ] Mudar o intervalo para miliseconds, qual o menor valor possível?
+
+* [ ] Pedir para entrar em um grupo que não existe ainda
+* [ ] No handshake, tem que criar um pacote "Estou vivo", tanto para o
+  servidor/cliente quanto para o cliente/servidor
+* [ ] O IP já está em um grupo, tem problema? (como lider/lider, lider/membro,
+  membro/membro, membro/líder)
+* [ ] Qualquer cliente pode ficar chutando o watchdog do grupo
+* [ ] Create group ok/nok sem que o grupo exista ainda
+* [ ] Mais de um create group ok/nok para um grupo que já existe (ok/ok, ok/nok, nok/nok, nok/ok)
+* [ ] Create group OK/NOK de alguém que não é o líder
+
+* [ ] Como sincronizar a tranmissão de um mesmo stream para múltiplos clientes?
