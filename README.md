@@ -232,21 +232,28 @@ Estrutura de arquivos:
 |-----/movies
 |-----/server
 |       |-----main.py
+|       |-----parses.py
 |       |-----handshake.py
 |       |-----streaming.py
 |       |-----registration.py
 |
 |-----/client
 |       |-----main.py
+|       |-----parses.py
 |       |-----handshake.py
 |       |-----streaming.py
 |       |-----registration.py
 |
 |-----/utils
-        |-----watchdog.py
         |-----log.py
+        |-----watchdog.py
         |-----statistics.py
 ```
+
+# Timeline
+*Ir testando!!!!*
+projeto -> log, watchdog, sockets -> handshake -> registration -> stream ->
+statistics -> main
 
 # TODO/Questionamentos
 * [ ] Talvez seja melhor alocar uma porta para o grupo, negociada só com o líder
@@ -280,3 +287,5 @@ Estrutura de arquivos:
 * [ ] Mudar os fluxogramas para inglês
 
 * [ ] Protocol: handshake líder -> registration -> stream
+
+* [ ] Falta entender como reproduzir o filme
