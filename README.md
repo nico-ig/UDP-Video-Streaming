@@ -1,12 +1,9 @@
 # Protocol
 This protocol aims to describe a method to concurrently streaming different movies
 to different groups of clients. To do so, it has two mais phases: the 
-[handshake](#handshake) phase and the [streaming](#streaming) phase.
-
-In the handshake phase, it establishs a session between the clients in a group
-and the server. In the streaming phase, it streams the chosen movie to the
-clients in that group.
-
+[handshake](#handshake) phase and the [streaming](#streaming) phase. In the handshake 
+phase, it establishs a session between the clients in a group and the server. 
+In the streaming phase, it streams the chosen movie to the clients in that group.
 When the movie has finished being streamed, the session between the group and
 the server will be closed.
 
@@ -47,6 +44,65 @@ The packets sent in each step are:
 7. [Group created](#group-created)
 
 ### Packets
+#### Fields
+| Field | Meaning |
+|------ | ------- |
+| [Type](#type) | Type of packet |
+| [Port](#port) | Port that will be used to communicate |
+| [Interval](#interval) | Time interval between stream packets |
+| [Members cnt](#members) | How many members will join the group |
+| [M. IPv4](#members) | IPv4 address of member |
+| [Movie ID](#movie) | Indicates the ID of a movie |
+| [Group ID](#groups-id) | Indicates the ID of a group |
+| [Mo. name size](#movie) | Indicates the length of the movie name in bytes |
+| [Movie name](#movie) | Name of the movie |
+| [F](#flag) | Flag to indicate whether the client could connect to the server or not|
+| ... | In packets with variable size, the dots represents the remaining elements |
+
+##### Type
+Each message has a type to indicate the operation type and each type is a power of
+two. The flags and it's values are listed in the table below:
+
+| Type | Packet |
+| --- | ------ |
+| 0x01 | [New group request](#new-group-request) |
+| 0x02 | [Create group ok/nok](#create-group-ok/nok) |
+| 0x04 | [Enter group request](#enter-group-request) |
+| 0x08 | [Enter group ok/nok](#enter-group-ok/nok) |
+| 0x10 | [New group received](#new-group-received) |
+| 0x20 | [Enter group received](#enter-group-received) |
+| 0x40 | [Group created](#group-created) |
+
+##### Port
+During the negotiation phase, the port field is used to determine which port
+will be used in communication by both the server and the client. After
+succesfully binding to a commom port, the communication between the server and
+the client will occur through it. The server will send it's packets throgh the
+new port and expect new packets from the client to arrive though the new port. 
+The client will close the socket to the standart port.
+
+##### Interval
+A interval time in microseconds between stream packets can be set, both the server 
+and the clients can set a interval time. During handshake it's value will be 
+chosen by taking the biggest value set by the server and the clients in the 
+trasmission group.
+
+##### Members
+Each group has a set of members that are identified by it's IPv4 addressess.
+During handshake the leader member (the one to initiate the handshake process),
+will send the amount of members that are expected to join and the IPv4 address
+of each member.
+
+##### Movie
+Each movie is represented by a ID. During the handshake the movie to be streamed 
+is chosen by the leader member.
+
+##### Flag
+At the end of the handshake, the flag field indicates whether the client could
+bind to the same port as the server or not. A value of 1 indicates that the
+connection was succesful, and a value of 0 indicates that the client couldn't
+connect.
+
 #### From client to server
 ##### New group request
 ```
@@ -116,66 +172,6 @@ The packets sent in each step are:
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ```
 
-#### Fields
-| Field | Meaning |
-|------ | ------- |
-| [Type](#type) | Type of packet |
-| [Port](#port) | Port that will be used to communicate |
-| [Interval](#interval) | Time interval between stream packets |
-| [Members cnt](#members) | How many members will join the group |
-| [M. IPv4](#members) | IPv4 address of member |
-| [Movie ID](#movie) | Indicates the ID of a movie |
-| [Group ID](#groups-id) | Indicates the ID of a group |
-| [Mo. name size](#movie) | Indicates the length of the movie name in bytes |
-| [Movie name](#movie) | Name of the movie |
-| [F](#flag) | Flag to indicate whether the client could connect to the server
-or not|
-| ... | In packets with variable size, the dots represents the remaining elements |
-
-##### Type
-Each message has a type to indicate the operation type and each type is a power of
-two. The flags and it's values are listed in the table below:
-
-| Type | Packet |
-| --- | ------ |
-| 0x01 | [New group request](#new-group-request) |
-| 0x02 | [Create group ok/nok](#create-group-ok/nok) |
-| 0x04 | [Enter group request](#enter-group-request) |
-| 0x08 | [Enter group ok/nok](#enter-group-ok/nok) |
-| 0x10 | [New group received](#new-group-received) |
-| 0x20 | [Enter group received](#enter-group-received) |
-| 0x40 | [Group created](#group-created) |
-
-##### Port
-During the negotiation phase, the port field is used to determine which port
-will be used in communication by both the server and the client. After
-succesfully binding to a commom port, the communication between the server and
-the client will occur through it. The server will send it's packets throgh the
-new port and expect new packets from the client to arrive though the new port. 
-The client will close the socket to the standart port.
-
-##### Interval
-A interval time in microseconds between stream packets can be set, both the server 
-and the clients can set a interval time. During handshake it's value will be 
-chosen by taking the biggest value set by the server and the clients in the 
-trasmission group.
-
-##### Members
-Each group has a set of members that are identified by it's IPv4 addressess.
-During handshake the leader member (the one to initiate the handshake process),
-will send the amount of members that are expected to join and the IPv4 address
-of each member.
-
-##### Movie
-Each movie is represented by a ID. During the handshake the movie to be streamed 
-is chosen by the leader member.
-
-##### Flag
-At the end of the handshake, the flag field indicates whether the client could
-bind to the same port as the server or not. A value of 1 indicates that the
-connection was succesful, and a value of 0 indicates that the client couldn't
-connect.
-
 ## Streaming
 
 ## Limitations
@@ -189,7 +185,6 @@ the client by overloading them with requests/responses.
   timeout for the socket expires. 
 * When a client loses connection to the server, the other clients in the group
   are not notified.
-  notified of the connection lost of the client.
 * The handshake phase has an overhead in the packets send and in the retries when
   the client can't bind to the same port as the server.
 * It works only for IPv4 addresses.
@@ -202,5 +197,5 @@ To avoid trying to connect indefinitly to the server, the client has a limit to
 the number of attempts to try to establish the handshake.
 
 ## Sockets
-## Log
 ## Watchdog
+## Log
