@@ -8,7 +8,7 @@ and the leader client chooses a available movie from the server to be streamed.
 When the movie has finished being streamed, the session is closed.
 
 ## Handshake
-![handshake](./images/handshake.png)
+![handshake](./images/port-negotiation.png)
 
 ### Packets
 #### Fields
