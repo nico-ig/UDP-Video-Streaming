@@ -194,16 +194,10 @@ the client by overloading them with requests/responses.
   starting to stream.
 * After a stream has started, no other member can join, neither the stream can be
   paused.
-* When connection between server and client is lost, it isn't known until the
-  timeout for the socket expires. 
 * When a client loses connection to the server, the other clients in the group
   are not notified.
-* The handshake phase has an overhead in the packets send and in the retries when
-  the client can't bind to the same port as the server.
-* It works only for IPv4 addresses.
-* If the server reaches it's maximum number of simultaneaous groups streamings,
-  new requests are dicarded and the client won't know the reason, only that it
-  didn't receive an answer from server.
+* The port is negotiated only with the leader, other clients in the same stream
+  won't be able to watch it if they are using that port for something else,
 
 # Implementation
 ## Modules
@@ -213,8 +207,18 @@ the client by overloading them with requests/responses.
 ### Client
 ![client](./images/client.png)
 
+### Handshake
+#### Server
+![server handshake](./images/handshake-server.png)
+
+#### Client
+![client handshake](./images/handshake-client.png)
 To avoid trying to connect indefinitly to the server, the client has a limit to
 the number of attempts to try to establish the handshake.
+
+### Stream
+
+The interval between stream packets has a maximum and minimum thresholds.
 
 ### Sockets
 ### Watchdog
@@ -250,42 +254,3 @@ Estrutura de arquivos:
         |-----statistics.py
 ```
 
-# Timeline
-*Ir testando!!!!*
-projeto -> log, watchdog, sockets -> handshake -> registration -> stream ->
-statistics -> main
-
-# TODO/Questionamentos
-* [ ] Talvez seja melhor alocar uma porta para o grupo, negociada só com o líder
-  e os outros clientes acessam ela, cria um novo processo. Fase de criar o
-  grupo, novo processo para esperar o registro dos outros membros. (limitação: a
-  porta é negociada só com o líder, talvez algum cliente não possa usar ela)
-* [ ] Espera os outros membros na transmissão nova
-* [ ] Na transmissão colocar a etapa de registro, o líder manda a lista nessa
-  etapa
-* [ ] A parte de escolher o intervalo vai ter que ir para o registration
-* [ ] Intervalo muito alto
-* [ ] Mudar o intervalo para miliseconds, qual o menor valor possível?
-
-* [ ] Pedir para entrar em um grupo que não existe ainda
-* [ ] No handshake, tem que criar um pacote "Estou vivo", tanto para o
-  servidor/cliente quanto para o cliente/servidor
-* [ ] O IP já está em um grupo, tem problema? (como lider/lider, lider/membro,
-  membro/membro, membro/líder)
-* [ ] Qualquer cliente pode ficar chutando o watchdog do grupo
-* [ ] Create group ok/nok sem que o grupo exista ainda
-* [ ] Mais de um create group ok/nok para um grupo que já existe (ok/ok, ok/nok, nok/nok, nok/ok)
-* [ ] Create group OK/NOK de alguém que não é o líder
-
-* [ ] Como sincronizar a tranmissão de um mesmo stream para múltiplos clientes?
-
-* [ ] Vai ter que ter o ack pelo menos para o handshake e pacotes de
-  controle.Talvez para a transmissão seja mais fácil com o ack também
-* [ ] Vai precisar confirmar os pacotes de controle e tratar pacotes de controle
-  retransmitidos
-
-* [ ] Mudar os fluxogramas para inglês
-
-* [ ] Protocol: handshake líder -> registration -> stream
-
-* [ ] Falta entender como reproduzir o filme
