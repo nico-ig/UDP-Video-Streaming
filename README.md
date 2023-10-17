@@ -8,7 +8,7 @@ When the movie has finished being streamed, the session between the group and
 the server will be closed.
 
 ## Handshake
-![handshake](./images/handshake.png)
+![handshake](./images/port-negotiation.png)
 
 The handshake process can be described as follows:
 1. A leader client sends a request to initiate a new group to the server, with
