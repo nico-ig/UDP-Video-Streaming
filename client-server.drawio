@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2023-10-17T01:51:17.635Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/118.0" etag="grPSavyginUEmz4Tpf-U" version="22.0.4" type="github" pages="7">
+<mxfile host="app.diagrams.net" modified="2023-10-17T02:00:53.441Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/118.0" etag="2GHTdtjFF7dOHEDaaDRb" version="22.0.4" type="github" pages="4">
   <diagram name="Server" id="ynFxNo4VnXaIg0oJXaSw">
     <mxGraphModel dx="1740" dy="975" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -1004,51 +1004,6 @@
           <mxGeometry x="0.0146" y="1" relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
-        </mxCell>
-      </root>
-    </mxGraphModel>
-  </diagram>
-  <diagram id="oEFVGaxRNCSOq0fpEpuu" name="Watchdog">
-    <mxGraphModel dx="1392" dy="780" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
-      <root>
-        <mxCell id="0" />
-        <mxCell id="1" parent="0" />
-        <mxCell id="nNY-6-hqQRQLKkR5IcSp-1" value="Para o PID e para o socket(handshake), quando receber um pacote chutar o watchdog apropriado" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
-          <mxGeometry x="270" y="240" width="260" height="110" as="geometry" />
-        </mxCell>
-        <mxCell id="ILwmboTrQmDwjbtW9iPF-1" value="No handshake, para o grupo, quando der o timeout no watchdog começar a transmissão" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
-          <mxGeometry x="235" y="350" width="330" height="100" as="geometry" />
-        </mxCell>
-        <mxCell id="FjTtI_PciSSL7uWtUmBq-1" value="No handshake, quando chutar o watchdog do grupo, chutar todos os sockets dos clientes" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
-          <mxGeometry x="240" y="490" width="320" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="FjTtI_PciSSL7uWtUmBq-2" value="No handshake, os clientes devem ficar avisando que estão conectados, se parar de avisar remover o registro " style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
-          <mxGeometry x="245" y="590" width="320" height="50" as="geometry" />
-        </mxCell>
-      </root>
-    </mxGraphModel>
-  </diagram>
-  <diagram id="rj1SsGpW82iGfi64MFSo" name="Log">
-    <mxGraphModel dx="1392" dy="780" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
-      <root>
-        <mxCell id="0" />
-        <mxCell id="1" parent="0" />
-        <mxCell id="08bIjT_jDI1CdLGSf_Yg-1" value="Um arquivo por processo, colocar o timestamp" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
-          <mxGeometry x="320" y="170" width="210" height="80" as="geometry" />
-        </mxCell>
-      </root>
-    </mxGraphModel>
-  </diagram>
-  <diagram id="leRgIkCJNimECjLF5GRE" name="Sockets">
-    <mxGraphModel dx="1392" dy="780" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
-      <root>
-        <mxCell id="0" />
-        <mxCell id="1" parent="0" />
-        <mxCell id="nuUkarmhGOJ-Bqpgnmp_-1" value="Se tiver uma porta selecionada, tenta ela, se nao, pede pro so escolher uma. Registrar no watchdog ao abrir, ao fechar remover do watchdog" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
-          <mxGeometry x="250" y="300" width="350" height="120" as="geometry" />
-        </mxCell>
-        <mxCell id="OMOAtfaoVUiR4UPCi921-1" value="Responsável por ver se o cliente já tem uma porta ou não" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-          <mxGeometry x="250" y="240" width="270" height="50" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
