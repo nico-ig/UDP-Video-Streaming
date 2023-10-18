@@ -56,7 +56,7 @@ The packets sent in each step are:
 1. [Movies Available](#movies-avaiable)
 2. [Movie Choice](#movie-choice)
 
-### Movie stream
+### Movie Streaming
 
 ## Packets
 ### Port Request/Port Allocated
@@ -98,6 +98,13 @@ The packets sent in each step are:
 ```
 
 ### Movie Choice
+```
+0               1               2               3
+0 1 2 3 4 5 6 7 8 1 2 3 4 5 6 7 8 1 2 3 4 5 6 7 8
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|      Type     |      Seq      |    Movie ID   |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```
 
 ### ACK
 ```
@@ -205,8 +212,18 @@ the client by overloading them with requests/responses.
 To avoid trying to connect indefinitly to the server, the client has a limit to
 the number of attempts to try to establish the handshake.
 
-### Stream
+### Streaming
 The interval between stream packets has a maximum and minimum thresholds.
+#### Server
+![server stream](./images/stream-server.png)
+
+##### Registration
+![server registration](./images/registration-server.png)
+
+##### Movie Selection
+![server movie selection](./images/movie-selection-server.png)
+
+##### Movie Streaming
 
 ### Sockets
 ### Watchdog
@@ -240,3 +257,6 @@ Estrutura de arquivos:
         |-----statistics.py
 ```
 
+# Notas
+* [ ] Ao começar a stream mandar um pacote com o nome do filme que será
+  transmitido e o intervalo escolhido
