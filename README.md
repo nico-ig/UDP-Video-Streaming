@@ -271,3 +271,7 @@ Estrutura de arquivos:
 # Notas
 * [ ] Ao começar a stream mandar um pacote com o nome do filme que será
   transmitido e o intervalo escolhido
+* [ ] No client registration e no server movie selection colocar pra registrar logo que entra e pra chutar
+  dps q enviar o pacote
+* [ ] No client registrarion tem que arrumar o pacote outros
+* [ ] No server stream remover o registration watchdog dps do timeout
