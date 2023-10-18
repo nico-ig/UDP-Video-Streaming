@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2023-10-18T04:08:06.699Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/118.0" etag="6R8J-K0ETckCEtpVQghx" version="22.0.4" type="github" pages="13">
+<mxfile host="app.diagrams.net" modified="2023-10-18T04:09:40.796Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/118.0" etag="ewL6pTufc6CrkFiI_HJ_" version="22.0.4" type="github" pages="13">
   <diagram name="Server" id="ynFxNo4VnXaIg0oJXaSw">
     <mxGraphModel dx="1392" dy="780" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -1636,8 +1636,8 @@
             <mxPoint x="10" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="fHIBy-Td9ArTtY3RPWpG-75" value="&lt;font size=&quot;1&quot;&gt;&lt;b style=&quot;font-size: 20px;&quot;&gt;Server&lt;/b&gt;&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="fHIBy-Td9ArTtY3RPWpG-1">
-          <mxGeometry x="-598" y="45" width="50" height="30" as="geometry" />
+        <mxCell id="fHIBy-Td9ArTtY3RPWpG-75" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;&lt;b&gt;Server Stream&lt;br&gt;&lt;/b&gt;&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="fHIBy-Td9ArTtY3RPWpG-1">
+          <mxGeometry x="-590" y="45" width="50" height="30" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
