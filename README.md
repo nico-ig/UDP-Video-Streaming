@@ -225,6 +225,17 @@ The interval between stream packets has a maximum and minimum thresholds.
 
 ##### Movie Streaming
 
+#### Client
+![client stream](./images/stream-client.png)
+
+##### Registration
+![client registration](./images/registration-client.png)
+
+##### Movie Selection
+![client movie selection](./images/movie-selection-client.png)
+
+##### Movie Streaming
+
 ### Sockets
 ### Watchdog
 ### Log
