@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2023-10-18T02:31:12.218Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/118.0" etag="wgGIebTvjE80BsXp6Gir" version="22.0.4" type="github" pages="11">
+<mxfile host="app.diagrams.net" modified="2023-10-18T02:35:59.371Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/118.0" etag="K1wUUjuvSaI2_y-XLWe7" version="22.0.4" type="github" pages="11">
   <diagram name="Server" id="ynFxNo4VnXaIg0oJXaSw">
     <mxGraphModel dx="1392" dy="780" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -1215,7 +1215,7 @@
     </mxGraphModel>
   </diagram>
   <diagram name="Stream Server" id="i4lsbCKlmEN9ox57i2BT">
-    <mxGraphModel dx="4827" dy="2229" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="1778" dy="520" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="fHIBy-Td9ArTtY3RPWpG-0" />
         <mxCell id="fHIBy-Td9ArTtY3RPWpG-1" parent="fHIBy-Td9ArTtY3RPWpG-0" />
@@ -1231,7 +1231,7 @@
         <mxCell id="fHIBy-Td9ArTtY3RPWpG-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="fHIBy-Td9ArTtY3RPWpG-1" source="fHIBy-Td9ArTtY3RPWpG-6" target="fHIBy-Td9ArTtY3RPWpG-28">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="fHIBy-Td9ArTtY3RPWpG-6" value="SIGINT recebido" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="fHIBy-Td9ArTtY3RPWpG-1">
+        <mxCell id="fHIBy-Td9ArTtY3RPWpG-6" value="SIGINT received" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="fHIBy-Td9ArTtY3RPWpG-1">
           <mxGeometry x="8" y="280" width="120" height="40" as="geometry" />
         </mxCell>
         <mxCell id="fHIBy-Td9ArTtY3RPWpG-7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="fHIBy-Td9ArTtY3RPWpG-1" source="fHIBy-Td9ArTtY3RPWpG-8" target="fHIBy-Td9ArTtY3RPWpG-4">
@@ -1348,7 +1348,7 @@
         <mxCell id="fHIBy-Td9ArTtY3RPWpG-64" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="fHIBy-Td9ArTtY3RPWpG-1" source="fHIBy-Td9ArTtY3RPWpG-65" target="fHIBy-Td9ArTtY3RPWpG-50">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="fHIBy-Td9ArTtY3RPWpG-65" value="Register watchdog timed out" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b0e3e6;strokeColor=#0e8088;" vertex="1" parent="fHIBy-Td9ArTtY3RPWpG-1">
+        <mxCell id="fHIBy-Td9ArTtY3RPWpG-65" value="Registration watchdog timed out" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b0e3e6;strokeColor=#0e8088;" vertex="1" parent="fHIBy-Td9ArTtY3RPWpG-1">
           <mxGeometry x="480" y="360" width="120" height="40" as="geometry" />
         </mxCell>
         <mxCell id="fHIBy-Td9ArTtY3RPWpG-66" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="fHIBy-Td9ArTtY3RPWpG-1" source="fHIBy-Td9ArTtY3RPWpG-67" target="fHIBy-Td9ArTtY3RPWpG-68">
