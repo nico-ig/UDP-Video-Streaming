@@ -119,12 +119,11 @@ The packets sent in each step are:
 | [Movie ID](#movie) | Indicates the ID of a movie |
 | [Mo. name size](#movie) | Indicates the length of the movie name in bytes |
 | [Movie name](#movie) | Name of the movie |
-| Next movies | The *Movie ID*, *Mo. name size* and *Movie name* of the
-remaining movies |
+| Next movies | The *Movie ID*, *Mo. name size* and *Movie name* of the remaining movies |
 
 #### Type
 Each message has a type to indicate the operation type and each type is a power of
-two. The flags and it's values below:
+two. The flags and it's values are listed below:
 
 ##### Handshake
 | Type | Packet |
@@ -173,6 +172,8 @@ The server must have a default interval time.
 #### Movie
 Each movie is represented by a ID. During the registration the movie to be streamed 
 is chosen by the leader member. The server should have at least one movie available.
+The fields to describe a movie are it's ID number, the size in bytes of it's
+name and it's name.
 
 ## Limitations
 * The protocol doesn't define any protection against attacks to the server or to 
@@ -226,14 +227,12 @@ Estrutura de arquivos:
 |       |-----parses.py
 |       |-----handshake.py
 |       |-----streaming.py
-|       |-----registration.py
 |
 |-----/client
 |       |-----client.py
 |       |-----parses.py
 |       |-----handshake.py
 |       |-----streaming.py
-|       |-----registration.py
 |
 |-----/utils
         |-----log.py
