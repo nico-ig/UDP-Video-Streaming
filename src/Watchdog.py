@@ -2,9 +2,8 @@ import threading
 import time
 
 class Watchdog:
-    def __init__(self, thread, timeout):
+    def __init__(self, timeout):
         _ = self
-        _._thread = thread
         _._timeout = timeout * 1e9
         _._last_kick = time.time_ns()
         _._stop_event = threading.Event()

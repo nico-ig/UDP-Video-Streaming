@@ -15,5 +15,5 @@ port = 12345
 this_thread = threading.current_thread
 
 network = Network.Network(host, port)
-watchdog = Watchdog.Watchdog(this_thread, 5)
+watchdog = Watchdog.Watchdog(5)
 network.register_callback(1, callback)
