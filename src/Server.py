@@ -8,7 +8,7 @@ import struct
 dict_client = {}
 dict_watchdog = {}
 
-host = "127.0.0.1"
+host = "10.254.225.28"
 port = 12345
 
 network = Network.Network(host, port)
@@ -22,11 +22,11 @@ def sigint_handler(signum=0, frame=''):
 def client_timedout(self):
     source_ip = dict_watchdog[self]
 
-    client_network, client_watchdog = dict_client[source_ip]
+    client_network, client_watchdog = dict_client[source]
     client_network.stop()
     client_watchdog.stop()
 
-    del dict_client[source_ip]
+    del dict_client[source]
     del dict_watchdog[self]
 
 def mount_port_allocated_packet():
@@ -42,10 +42,10 @@ def new_port_request(data, source):
     if source_ip not in dict_client:
         client_network = Network.Network(host)
         client_watchdog = Watchdog.Watchdog(5, client_timedout)
-        dict_client[source_ip] = (client_network, client_watchdog)
+        dict_client[source] = (client_network, client_watchdog)
         dict_watchdog[client_watchdog] = source_ip
 
-    client_network, client_watchdog = dict_client[source_ip]
+    client_network, client_watchdog = dict_client[source]
     client_watchdog.kick()
     packet = mount_port_allocated_packet()
 
@@ -62,7 +62,7 @@ def new_port_ok_nok(data, source):
         return
 
     source_ip, source_port = source
-    client_network, client_watchdog = dict_client[source_ip]
+    client_network, client_watchdog = dict_client[source]
 
     port, status = parse_port_ok_nok_packet(data)
     if client_network.get_port() != port:
