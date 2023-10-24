@@ -1,9 +1,8 @@
 def serialize_str(stri):
     data = stri.encode("utf-8")
-    packet = bytes([1]) + data
-    return packet
+    return data
 
-def print_func(data):
+def print_func(data, source):
     msg = data.decode("utf-8")
     print(msg)
 
