@@ -1,11 +1,11 @@
 # Protocol
-This protocol aims to describe a method to concurrently streaming different movies
+This protocol aims to describe a method to concurrently streaming different Musics
 to different groups of clients. To do so, it has two mais phases: the 
 [handshake](#handshake) phase and the [streaming](#streaming) phase. In the handshake 
 phase, it allocates a port between a leader client and the server. 
 In the streaming phase, the clients wishing to join register to that session 
-and the leader client chooses a available movie from the server to be streamed.
-When the movie has finished being streamed, the session is closed.
+and the leader client chooses a available Music from the server to be streamed.
+When the Music has finished being streamed, the session is closed.
 
 ## Handshake
 ![handshake](./images/port-negotiation.png)
@@ -44,19 +44,19 @@ The packets sent in each step are:
 2. [Registration ACK](#ack)
 3. No packet is sent
 
-### Movie selection
-![movie selection](./images/movie-selection.png)
+### Music selection
+![Music selection](./images/Music-selection.png)
 
-During the registration process, the movie to be streamed is chose by the leader
+During the registration process, the Music to be streamed is chose by the leader
 client, the process is described bellow:
-1. The server sents the avaiable movies to the client.
-2. The client answer with the movie it wishes to watch.
+1. The server sents the avaiable Musics to the client.
+2. The client answer with the Music it wishes to watch.
 
 The packets sent in each step are:
-1. [Movies Available](#movies-avaiable)
-2. [Movie Choice](#movie-choice)
+1. [Musics Available](#Musics-avaiable)
+2. [Music Choice](#Music-choice)
 
-### Movie Streaming
+### Music Streaming
 
 ## Packets
 ### Port Request/Port Allocated
@@ -86,23 +86,23 @@ The packets sent in each step are:
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ```
 
-### Movies Available
+### Musics Available
 ```
 0               1               2               3               4
 0 1 2 3 4 5 6 7 8 1 2 3 4 5 6 7 8 1 2 3 4 5 6 7 8 1 2 3 4 5 6 7 8
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|      Type     |      Seq      |   Movie cnt   |    Movie ID   |
+|      Type     |      Seq      |   Music cnt   |    Music ID   |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-| Mo. name size |   Movie name  |        Next movies ...        |
+| Mo. name size |   Music name  |        Next Musics ...        |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ```
 
-### Movie Choice
+### Music Choice
 ```
 0               1               2               3
 0 1 2 3 4 5 6 7 8 1 2 3 4 5 6 7 8 1 2 3 4 5 6 7 8
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|      Type     |      Seq      |    Movie ID   |
+|      Type     |      Seq      |    Music ID   |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ```
 
@@ -123,10 +123,10 @@ The packets sent in each step are:
 | [Port](#port) | Port that will be used to communicate |
 | [F(lag)](#flag) | Flag to indicate whether the client could connect to the server or not |
 | [Interval](#interval) | Time between stream packets |
-| [Movie ID](#movie) | Indicates the ID of a movie |
-| [Mo. name size](#movie) | Indicates the length of the movie name in bytes |
-| [Movie name](#movie) | Name of the movie |
-| Next movies | The *Movie ID*, *Mo. name size* and *Movie name* of the remaining movies |
+| [Music ID](#Music) | Indicates the ID of a Music |
+| [Mo. name size](#Music) | Indicates the length of the Music name in bytes |
+| [Music name](#Music) | Name of the Music |
+| Next Musics | The *Music ID*, *Mo. name size* and *Music name* of the remaining Musics |
 
 #### Type
 Each message has a type to indicate the operation type and each type is a power of
@@ -143,8 +143,8 @@ two. The flags and it's values are listed below:
 | Type | Packet |
 | --- | ------ |
 | 0x01 | [Registration](#registration-request)
-| 0x02 | [Movies Available](#movies-avaiable)
-| 0x04 | [Movie Choice](#movie-choice) |
+| 0x02 | [Musics Available](#Musics-avaiable)
+| 0x04 | [Music Choice](#Music-choice) |
 
 ###### Commom
 | Type | Packet |
@@ -176,10 +176,10 @@ trasmission group. If the client wishes to use the interval in the server, this
 field should be of zero.
 The server must have a default interval time.
 
-#### Movie
-Each movie is represented by a ID. During the registration the movie to be streamed 
-is chosen by the leader member. The server should have at least one movie available.
-The fields to describe a movie are it's ID number, the size in bytes of it's
+#### Music
+Each Music is represented by a ID. During the registration the Music to be streamed 
+is chosen by the leader member. The server should have at least one Music available.
+The fields to describe a Music are it's ID number, the size in bytes of it's
 name and it's name.
 
 ## Limitations
@@ -220,10 +220,10 @@ The interval between stream packets has a maximum and minimum thresholds.
 ##### Registration
 ![server registration](./images/registration-server.png)
 
-##### Movie Selection
-![server movie selection](./images/movie-selection-server.png)
+##### Music Selection
+![server Music selection](./images/Music-selection-server.png)
 
-##### Movie Streaming
+##### Music Streaming
 
 #### Client
 ![client stream](./images/stream-client.png)
@@ -231,10 +231,10 @@ The interval between stream packets has a maximum and minimum thresholds.
 ##### Registration
 ![client registration](./images/registration-client.png)
 
-##### Movie Selection
-![client movie selection](./images/movie-selection-client.png)
+##### Music Selection
+![client Music selection](./images/Music-selection-client.png)
 
-##### Movie Streaming
+##### Music Streaming
 
 ### Sockets
 ### Watchdog
@@ -249,7 +249,7 @@ Estrutura de arquivos:
 |-----main.py 
 |-----/tests
 |-----/images
-|-----/movies
+|-----/Musics
 |-----/server
 |       |-----server.py
 |       |-----parses.py
@@ -271,7 +271,7 @@ Estrutura de arquivos:
 # Notas
 * [ ] Ao começar a stream mandar um pacote com o nome do filme que será
   transmitido e o intervalo escolhido
-* [ ] No client registration e no server movie selection colocar pra registrar logo que entra e pra chutar
+* [ ] No client registration e no server Music selection colocar pra registrar logo que entra e pra chutar
   dps q enviar o pacote
 * [ ] No client registrarion tem que arrumar o pacote outros
 * [ ] No server stream remover o registration watchdog dps do timeout
