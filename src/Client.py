@@ -39,7 +39,7 @@ def port_allocated(data, source):
     try:
         source_ip, source_port = source
         # MUDAR ISSO QUANDO N FOR LOCALHOST OU ACHAR UM JEITO MAIS INTELIGENTE
-        dedicated_network = Network.Network('', source_port+1)
+        dedicated_network = Network.Network('', source_port)
         
         server_watchdog.kick()
 
@@ -72,7 +72,7 @@ def main():
     network.register_callback(4, Utils.print_func)
     send_port_request()
 
-server = ("127.0.0.1", 12345)
+server = ("10.254.225.28", 12345)
 dedicated_network = None
 network = Network.Network()
 server_watchdog = Watchdog.Watchdog(5, sigint_handler)
