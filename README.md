@@ -269,9 +269,25 @@ Estrutura de arquivos:
 ```
 
 # Notas
-* [ ] Ao começar a stream mandar um pacote com o nome do filme que será
-  transmitido e o intervalo escolhido
-* [ ] No client registration e no server Music selection colocar pra registrar logo que entra e pra chutar
-  dps q enviar o pacote
-* [ ] No client registrarion tem que arrumar o pacote outros
-* [ ] No server stream remover o registration watchdog dps do timeout
+* [ ] Fazer o unregister\_callback
+* [ ] Mandar os intervalos no registration
+* [ ] Tirar os números mágicos
+* [ ] Os clientes devem esperar o registration sem morrer (chutar o timeout
+  durante a duração do registration, enviar isso no ack)
+* [ ] Fazer a parte de escolher a música
+* [ ] Ao começar a stream mandar um pacote com o nome da musica que será
+  transmitido, o intervalo escolhido e o sample\_rate
+* [ ] Enviar/receber a stream (Cuidar com overflow no número das sequências e de
+  fechar a conexão se ficar mt tempo sem receber nada do servidor. Pensar como
+  indicar que terminou e não que a conexão morreu, enviar um pacote confirmável
+  de fim de transmissão?)
+* [ ] Separar a parte de montar os pacotes, tem um monte que é só colocar um
+  byte e estão como funções diferentes
+* [ ] O código tá feio, arrumar
+* [ ] Colocar uns comentários para o elias
+* [ ] Atualizar os pacotes no readme
+* [ ] Contar quantos pacotes foram perdidos
+* [ ] Contar quantos pacotes chegaram fora de ordem
+* [ ] Fazer o log, acho que fica fácil se pegar do stdout
+* [ ] Colocar uns try catch pro programa não morrer
+* [ ] Ver como fazer para rodar na entrega, script?

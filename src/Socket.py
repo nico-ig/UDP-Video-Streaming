@@ -1,11 +1,13 @@
 import threading
 import socket
+import os
 
 class Socket:
     def __init__(self, host, port, recv_event, recv_queue):
         _ = self;
         _._host = host 
-        _._port = port
+        _._host_ip = socket.gethostbyname(_._host)
+        _._port = int(port)
         _._recv_event = recv_event
         _._recv_queue = recv_queue
         _._stop_event = threading.Event()
@@ -14,9 +16,8 @@ class Socket:
     def _start_socket(_):
         try:
             _._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            _._socket.bind((_._host, _._port))
-            _._host, _._port = _._socket.getsockname()
-
+            _._socket.bind((_._host_ip, _._port))
+            _._host_ip, _._port = _._socket.getsockname()
             _._start_threads()
         
         except:         
@@ -41,6 +42,7 @@ class Socket:
         while not _._stop_event.is_set():
             try:
                 packet, source = _._socket.recvfrom(1024)
+                print(f"Packet received by process {os.getpid()} in port {_._port}")
                 packet_type, packet_data = _._parse_packet(packet)
                 _._recv_queue.put((packet_type, packet_data, source))
                 _._recv_event.set()
@@ -48,8 +50,19 @@ class Socket:
             except:
                 pass
 
+    def resolve_name(_, name):
+        try:
+            ip_addr = socket.gethostbyname(name)
+        except:
+            ip_addr = name
+        finally:
+            return ip_addr
+
     def send(_, destination, packet):
-        _._socket.sendto(packet, destination)
+        destination_host, destination_port = destination
+        destination_port = int(destination_port)
+        destination_ip = _.resolve_name(destination_host)
+        _._socket.sendto(packet, (destination_ip, destination_port))
 
     def get_address(_):
         return _._host, _._port

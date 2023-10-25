@@ -1,6 +1,7 @@
 import threading
 import queue
 import Socket
+import os
 
 class Network:
     def __init__(self, host='', port=0):
@@ -15,7 +16,6 @@ class Network:
             _._callbacks = {}
             _._packet_queue = queue.Queue()
             _._packet_received = threading.Event()
-
             _._socket = Socket.Socket(_._host, _._port, _._packet_received, _._packet_queue)
             _._host, _._port = _._socket.get_address()
             _._start_threads()

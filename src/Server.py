@@ -1,88 +1,63 @@
 import Watchdog
 import Network
-import Utils
+import Streaming
 import threading
 import signal
 import struct
+import sys
+import multiprocessing
+import os
 
 dict_client = {}
 dict_watchdog = {}
+children = {}
 
-host = "10.254.225.28"
-port = 12345
-
-network = Network.Network(host, port)
+host = ""
+port = 0
+network = None
 
 def sigint_handler(signum=0, frame=''):
-    network.stop()
-    for (client_network, client_watchdog) in dict_client.values():
-        client_network.stop()
-        client_watchdog.stop()
+    if network != None:
+        network.stop()
 
-def client_timedout(self):
-    source_ip = dict_watchdog[self]
+    for child in children.values():
+        child.terminate()
 
-    client_network, client_watchdog = dict_client[source]
-    client_network.stop()
-    client_watchdog.stop()
+    for child in children.values():
+        child.join()
 
-    del dict_client[source]
-    del dict_watchdog[self]
+def child_process(host, lider):
+    Streaming.Streaming(host, lider)
 
-def mount_port_allocated_packet():
-    packet = bytes([2])
-    return packet
+def start_new_streaming(source):
+    global children
+
+    if source in children:
+        children[source].terminate()
+        children[source].join()
+
+    children[source] = multiprocessing.Process(target=child_process, args=(host, source,))
+    children[source].start()
 
 def new_port_request(data, source):
     if len(data) != 0:
         return
 
-    source_ip, source_port = source
-
-    if source_ip not in dict_client:
-        client_network = Network.Network(host)
-        client_watchdog = Watchdog.Watchdog(5, client_timedout)
-        dict_client[source] = (client_network, client_watchdog)
-        dict_watchdog[client_watchdog] = source_ip
-
-    client_network, client_watchdog = dict_client[source]
-    client_watchdog.kick()
-    packet = mount_port_allocated_packet()
-
-    client_network.send(source, packet)
-
-def parse_port_ok_nok_packet(data):
-    port = data[0:2]
-    port = struct.unpack("!H", port)
-    status = data[2]
-    return port[0], status
-
-def new_port_ok_nok(data, source):
-    if len(data) != 3:
-        return
-
-    source_ip, source_port = source
-    client_network, client_watchdog = dict_client[source]
-
-    port, status = parse_port_ok_nok_packet(data)
-    if client_network.get_port() != port:
-        return
-
-    client_watchdog.stop()
-
-    if status == 1:
-        print("Should start transmission but not implemented yet")
-        packet = bytes([4]) + Utils.serialize_str("Testing sending a packet to client through the dedicated port")
-        source_ip, source_port = source
-        source = (source_ip, source_port)
-        client_network.send(source, packet)
-
-    #Mover isso para junto do client_watchdog.stop() depois
-    client_network.stop()
+    start_new_streaming(source)
 
 def main():
+    if len(sys.argv) != 3:
+        print("Usage: python Server.py <hostname> <port>")
+        exit()
+
     signal.signal(signal.SIGINT, sigint_handler)
+
+    global host, port, network
+
+    host = sys.argv[1]
+    port = sys.argv[2]
+
+    network = Network.Network(host, port)
     network.register_callback(1, new_port_request)
-    network.register_callback(3, new_port_ok_nok)
 
 main()
