@@ -274,9 +274,7 @@ Estrutura de arquivos:
 * [ ] Tirar os números mágicos
 * [ ] Os clientes devem esperar o registration sem morrer (chutar o timeout
   durante a duração do registration, enviar isso no ack)
-* [ ] Fazer a parte de escolher a música
-* [ ] Ao começar a stream mandar um pacote com o nome da musica que será
-  transmitido, o intervalo escolhido e o sample\_rate
+* [ ] Fazer a parte de escolher a música (Deixar escolher várias)
 * [ ] Enviar/receber a stream (Cuidar com overflow no número das sequências e de
   fechar a conexão se ficar mt tempo sem receber nada do servidor. Pensar como
   indicar que terminou e não que a conexão morreu, enviar um pacote confirmável
