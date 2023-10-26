@@ -10,7 +10,7 @@ audio = AudioSegment.from_file(mp3_file, format="mp3")
 
 
 # Determine the duration of each segment
-segment_duration = 2  # in seconds
+segment_duration = 10  # in seconds
 
 # Split the audio into segments
 audioSegments = sh.streamPlayer()
@@ -21,6 +21,8 @@ for i in range(0, len(audio), segment_duration * 1000):
 
 # Function to play the audio segments
 def play_audio_segments():
+    print("Beginig streaming of [song name]...")
+    
     while audioSegments.streamHeap:
         segment = audioSegments.removeFromStream()
 
@@ -31,6 +33,7 @@ def play_audio_segments():
         sd.play(audio_data, 90000)
         sd.wait()
 
+    print("[song name] has ended")
 # Create a thread for playing audio segments
 audio_thread = threading.Thread(target=play_audio_segments)
 audio_thread.daemon = True  # The thread will exit when the main program exits

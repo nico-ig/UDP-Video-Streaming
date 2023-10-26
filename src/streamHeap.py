@@ -16,29 +16,23 @@ class streamPlayer:
         self.lastPlayed = -1
         self.lastHeap = -1
 
+    # Adds a new segment, only if its it has an id bigger than the last 
+    # (avoids duplication and reproduction of a past segment if it arrives)
     def addToStream(self, key, item):
         if key > self.lastHeap:
-            print(self.lastPlayed)
             heapq.heappush(self.streamHeap, (key, item))
             self.lastHeap = key
 
+    # Removes a segment from the stream and returns it to be played
     def removeFromStream(self):
         segment = self.streamHeap[0][1]
+        self.lastPlayed = self.streamHeap[0][0]
         heapq.heappop(self.streamHeap)
         return segment
 
-    def playStream(self):
-        if(len(self.streamHeap)>0):
-            segment = AudioSegment.from_mp3(io.BytesIO(self.streamHeap[0][1]))
-            print("Playing segment " + str(self.streamHeap[0][0]))
-            play(segment)
-            self.lastPlayed = self.streamHeap[0][0]
-            heapq.heappop(self.streamHeap)
-
+    # Plays a single segment of the stream
     def playSegment(self, segment):
         play(segment)
 
-# Example of usage (without the client-server part)
-# In this case output/output(0-3).mp4 are the fragments of bogos.mp3
-player = streamPlayer()
+
 
