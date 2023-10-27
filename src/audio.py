@@ -13,18 +13,18 @@ audio = AudioSegment.from_file(mp3_file, format="mp3")
 segment_duration = 10  # in seconds
 
 # Split the audio into segments
-audioSegments = sh.streamPlayer()
+audioSegments = sh.stream_player()
 
 for i in range(0, len(audio), segment_duration * 1000):
     segment = audio[i:i + segment_duration * 1000]
-    audioSegments.addToStream(i, segment)
+    audioSegments.add_to_stream(i, segment)
 
 # Function to play the audio segments
 def play_audio_segments():
     print("Beginig streaming of [song name]...")
     
     while audioSegments.streamHeap:
-        segment = audioSegments.removeFromStream()
+        segment = audioSegments.remove_from_stream()
 
         # Convert the segment to a NumPy array with the correct data type
         audio_data = np.array(segment.get_array_of_samples(), dtype=np.int16)
