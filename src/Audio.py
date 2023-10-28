@@ -10,11 +10,8 @@ h = []
 event = threading.Event()
 
 def callback(outdata, frames, time, status):
-    try:
-        data = h[0][1]
-        heapq.heappop(h)
-    except IndexError:
-        print("Heap is empty, cannot pop an element.")
+    data = h[0][1]
+    heapq.heappop(h)
     if len(data) < len(outdata):
         outdata[:len(data)] = data
         outdata[len(data):] = b'\x00' * (len(outdata) - len(data))
@@ -24,13 +21,16 @@ def callback(outdata, frames, time, status):
 
 try:
     with sf.SoundFile(filename) as f:
-        i = 0
-        while True:
-            data = f.buffer_read(blocksize, dtype='float32')
-            if not data:
-                break
-            heapq.heappush(h, (i, data))  # Pre-fill queue
-            i += 1
+        try:
+            i = 0
+            while True:
+                data = f.buffer_read(blocksize, dtype='float32')
+                if not data:
+                    break
+                heapq.heappush(h, (i, data))  # Pre-fill queue
+                i += 1
+        except Exception as e:
+            pass
         stream = sd.RawOutputStream(
             samplerate=f.samplerate, blocksize=blocksize,
             device=None, channels=f.channels, dtype='float32',
