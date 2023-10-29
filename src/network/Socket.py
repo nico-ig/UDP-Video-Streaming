@@ -63,7 +63,7 @@ class Socket:
         self.socket.sendto(packet, (destination_ip, destination_port))
 
     def get_address(self):
-        return (self.host_ip, self.host_port)
+        return self.host_ip, self.host_port
 
     def stop(self):
         self.socket.close()
