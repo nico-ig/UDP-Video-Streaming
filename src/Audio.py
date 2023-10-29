@@ -31,7 +31,7 @@ try:
         packet = packets_array[i]
         seq = struct.unpack('Q', packet[:8])
         data = packet[8:]
-        heapq.heappush(h, (seq, data))
+        heapq.heappush(h, (seq, data)) # Change to streamheap 
 
     stream = sd.RawOutputStream(
         samplerate=file_samplerate, blocksize=file_blocksize // 8,

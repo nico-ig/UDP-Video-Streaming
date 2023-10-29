@@ -1,5 +1,6 @@
 import Network
 import Watchdog
+import AudioServer
 import threading
 import signal
 import struct
@@ -10,6 +11,7 @@ class Streaming:
         self.host = host
         self.lider = lider
         self.musics = musics
+        self.next_packet = 0
         self.clients = set()
         self.start_event = threading.Event()
         self.network = Network.Network(self.host)
@@ -62,10 +64,8 @@ class Streaming:
             pass
 
         print("Should start streaming, clients registered are:")
-        for (music_config, music_packet) in self.musics:
-            print(music_config)
         for client in self.clients:
-            print(client)
+            AudioServer.send_audio_packet(self.music_packets, self.network, client, self.next_packet)  
         self.watchdog.stop()
 
     def sigint_handler(self, self_watchdog=""):
