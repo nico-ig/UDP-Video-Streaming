@@ -66,6 +66,8 @@ class Socket:
 
             self.stop_event = threading.Event()
             self.receive_thread = Utils.start_thread(self.receive_packets)
+            message = f"Binded to address ({self.host_ip, self.host_port})"
+            self.logger.info(message)
 
         except Exception as e:
             error_message = 'Error creating socket - ' + type(e)+ ': ' + str(e)
