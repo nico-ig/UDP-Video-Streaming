@@ -1,9 +1,20 @@
-def fragment_binary(file_path):
-    with open(file_path, 'rb') as file:
-        binary_data = file.read()
-    fragment_size = 1024  # Change this to adjust the size of each fragment
-    binary_fragments = [binary_data[i:i+fragment_size] for i in range(0, len(binary_data), fragment_size)]
-    return binary_fragments
+import soundfile as sf
+
+def fragment_binary(binary_fragments, blocksize, file_path):
+    with sf.SoundFile(file_path) as file:
+        try:
+            while True: 
+                fragment = file.buffer_read(blocksize, dtype='float32')
+                if not fragment:
+                    break
+                binary_fragments.append(fragment)
+        except:
+            pass
 
 # Example usage
-binary_fragments = fragment_binary('path/to/file')
+binary_fragments = []   # Array where fragments should be stored
+blocksize = 2048        # Size of each fragment
+file_path = 'music.mp3' 
+fragment_binary(binary_fragments, blocksize, file_path)
+
+print(f"{binary_fragments}")
