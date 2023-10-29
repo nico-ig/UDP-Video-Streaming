@@ -47,7 +47,7 @@ class Network:
 
     def register_callback(self, packet_type, function):
         """
-        Register a callback function to a given type
+        Register a callback function for a given type
         """
         try:
             self.callbacks[packet_type] = function
@@ -58,7 +58,7 @@ class Network:
 
     def unregister_callback(self, packet_type):
         """
-        Unregister a callback function to a given type
+        Unregister a callback function for a given type
         """
         try:
             del self.callbacks[packet_type]
@@ -95,6 +95,7 @@ class Network:
             self.packet_queue.put((-1, 0, 0))
             self.packet_received.set()
             self.handle_thread.join()
+
         except Exception as e:
             error_message = 'Error stopping network interface - ' + type(e)+ ': ' + str(e)
             self.logger.error(error_message)
