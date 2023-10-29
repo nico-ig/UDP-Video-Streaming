@@ -2,10 +2,11 @@
 Deals with timeouts and time management callbacks
 """
 
-from utils import Utils
-
 import threading
 import time
+
+from src.utils import Utils
+from src.utils import Logger
 
 class Timer:
     """
@@ -23,10 +24,9 @@ class Timer:
             self.timer_thread = Utils.start_thread(self.timer)
 
         except Exception as e:
-            error_message = 'Error creating timer - ' + type(e)+ ': ' + str(e)
-            self.logger.error(error_message)
+            self.logger.error("An error occurred: %s", str(e))
 
-    def timer(self):
+    def timer(self, thread):
         """
         Callback function to emulate a timer
         """
