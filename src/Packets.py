@@ -49,6 +49,6 @@ def create_musics_packets(blocksize, folder_path):
         print(type(e).__name__ + ': ' + str(e))
 
 # Example usage
-blocksize = 1024     # Size of each fragment
-musics_folder = '../musics' 
-musics = create_musics_packets(blocksize, musics_folder)
+#blocksize = 1024     # Size of each fragment
+#musics_folder = '../musics' 
+#musics = create_musics_packets(blocksize, musics_folder)

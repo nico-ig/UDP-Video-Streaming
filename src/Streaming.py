@@ -6,65 +6,67 @@ import struct
 import os
 
 class Streaming:
-    def __init__(self, host, lider):
-        _ = self
-        _._host = host
-        _._lider = lider
-        _.clients = set()
-        _.start_event = threading.Event()
-        _._network = Network.Network(_._host)
-        signal.signal(signal.SIGINT, _.sigint_handler)
-        _._start()
+    def __init__(self, host, lider, musics):
+        self.host = host
+        self.lider = lider
+        self.musics = musics
+        self.clients = set()
+        self.start_event = threading.Event()
+        self.network = Network.Network(self.host)
+        signal.signal(signal.SIGINT, self.sigint_handler)
+        self.start()
 
-    def _start(_):
-        _._send_port_allocated()
-        _._network.register_callback(3, _.new_port_ok)
-        _._network.register_callback(4, _.new_client)
-        _._start_streaming()
+    def start(self):
+        self.send_port_allocated()
+        self.network.register_callback(3, self.new_port_ok)
+        self.network.register_callback(4, self.new_client)
+        self.start_streaming()
 
-    def _send_port_allocated(_):
-        packet = _._mount_port_allocated_packet()
-        _._network.send(_._lider, packet)
-        _._watchdog = Watchdog.Watchdog(5, _.sigint_handler)
+    def send_port_allocated(self):
+        packet = self.mount_port_allocated_packet()
+        self.network.send(self.lider, packet)
+        self.watchdog = Watchdog.Watchdog(5, self.sigint_handler)
 
-    def _mount_port_allocated_packet(_):
+    def mount_port_allocated_packet(self):
         packet = bytes([2])
         return packet
 
-    def new_port_ok(_, data, source):
+    def new_port_ok(self, data, source):
         if len(data) != 0:
             return
 
         source_ip, source_port = source
-        lider_ip, lider_port = _._lider
+        lider_ip, lider_port = self.lider
 
         if source_ip != lider_ip:
-            _.sigint_handler()
+            self.sigint_handler()
 
 ###### Derregistrar o tipo 3
-        _._watchdog.stop()
-        _._watchdog = Watchdog.Watchdog(15, _.register_finished)
+        self.watchdog.stop()
+        self.watchdog = Watchdog.Watchdog(15, self.register_finished)
 
-    def new_client(_, data, source):
+    def new_client(self, data, source):
         if len(data) != 0:
             return
 
-        _.clients.add(source)
+        self.clients.add(source)
         packet = bytes([5])
-        _._network.send(source, packet) 
+        self.network.send(source, packet) 
 
-    def register_finished(_, self):
-        _._network.stop()
-        _.start_event.set()
+    def register_finished(self, self_watchdog):
+        self.network.stop()
+        self.start_event.set()
 
-    def _start_streaming(_):
-        while not _.start_event.is_set():
+    def start_streaming(self):
+        while not self.start_event.is_set():
             pass
 
         print("Should start streaming, clients registered are:")
-        for client in _.clients:
+        for (music_config, music_packet) in self.musics:
+            print(music_config)
+        for client in self.clients:
             print(client)
-        _._watchdog.stop()
+        self.watchdog.stop()
 
-    def sigint_handler(_, self=""):
-        _._network.stop()
+    def sigint_handler(self, self_watchdog=""):
+        self.network.stop()

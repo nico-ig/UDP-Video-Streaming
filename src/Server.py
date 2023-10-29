@@ -49,7 +49,7 @@ def new_port_request(data, source):
     start_new_streaming(source)
 
 def main():
-    if len(sys.argv) != 3:
+    if len(sys.argv) < 3:
         print("Usage: python Server.py <hostname> <port>")
         exit()
 
