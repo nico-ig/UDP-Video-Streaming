@@ -1,11 +1,12 @@
 import heapq
 import threading
 
+import getBinary
 import sounddevice as sd
-import soundfile as sf
 
-filename = "music.mp3"
+file_path = "music.mp3"
 blocksize = 2048
+binary_fragments = []
 h = []
 event = threading.Event()
 
@@ -20,23 +21,17 @@ def callback(outdata, frames, time, status):
         outdata[:] = data
 
 try:
-    with sf.SoundFile(filename) as f:
-        try:
-            i = 0
-            while True:
-                data = f.buffer_read(blocksize, dtype='float32')
-                if not data:
-                    break
-                heapq.heappush(h, (i, data))  # Pre-fill queue
-                i += 1
-        except Exception as e:
-            pass
-        stream = sd.RawOutputStream(
-            samplerate=f.samplerate, blocksize=blocksize,
-            device=None, channels=f.channels, dtype='float32',
-            callback=callback, finished_callback=event.set)
-        with stream:
-            event.wait()  # Wait until playback is finished
+    getBinary.fragment_binary(binary_fragments, blocksize, file_path)
+    for i in range(0, len(binary_fragments), 1):
+        fragment = binary_fragments[i] 
+        heapq.heappush(h, (i, fragment))  # Pre-fill queue
+
+    stream = sd.RawOutputStream(
+        samplerate=f.samplerate, blocksize=blocksize,
+        device=None, channels=f.channels, dtype='float32',
+        callback=callback, finished_callback=event.set)
+    with stream:
+       event.wait()  # Wait until playback is finished
 except KeyboardInterrupt:
     print('\nInterrupted by user')
 except Exception as e:

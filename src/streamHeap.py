@@ -14,7 +14,7 @@ class stream_player:
     def __init__(self):
         self.streamHeap = []
         self.lastPlayed = -1
-        self.lastHeap = -1
+        self.lastHeap = -1      
 
     # Adds a new segment, only if its it has an id bigger than the last 
     # (avoids duplication and reproduction of a past segment if it arrives)
