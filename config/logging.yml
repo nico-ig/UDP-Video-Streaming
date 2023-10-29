@@ -15,7 +15,11 @@ handlers:
     formatter: simple
     filename: ../../logs/<timestamp>.log 
 loggers:
-  simpleExample:
+  socket:
+    level: DEBUG
+    handlers: [console, file_handler] 
+    propagate: no
+  network:
     level: DEBUG
     handlers: [console, file_handler] 
     propagate: no

@@ -1,6 +1,5 @@
 """
-Summary: 
-    Creates and manages the logger.
+Creates and manages the logger.
 
 Example: \\
 logger = Logger.get_logger('simpleExample') \\
@@ -20,30 +19,27 @@ from datetime import datetime
 
 def get_logger(name):
     """
-    Sumary: 
-        Gets a logger by name
-
-    Args:
-        name (str): logger name
-
-    Returns:
-        logger: logger object
+    Gets a logger by name
     """
     try:
         return logging.getLogger(name)
     except:
         logging.error('Failed to get logger')
 
-try:
-    with open('../../config/logging.yml', 'r') as config_file:
-        config = yaml.safe_load(config_file)
+def start_logger():
+    """
+    Starts the logger, it should be called only once per project
+    """
+    try:
+        with open('../../config/logging.yml', 'r') as config_file:
+            config = yaml.safe_load(config_file)
 
-        current_timestamp = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+            current_timestamp = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
 
-        new_name = config['handlers']['file_handler']['filename'].replace('<timestamp>', current_timestamp)
-        config['handlers']['file_handler']['filename'] = new_name
+            new_name = config['handlers']['file_handler']['filename'].replace('<timestamp>', current_timestamp)
+            config['handlers']['file_handler']['filename'] = new_name
 
-        logging.config.dictConfig(config)
+            logging.config.dictConfig(config)
 
-except Exception as e:
-    print(f"Error loading the YAML configuration: {e}")
+    except Exception as e:
+        print(f"Error loading the YAML configuration: {e}")
