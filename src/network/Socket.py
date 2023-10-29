@@ -2,11 +2,11 @@
 Deals directly with the socket management
 """
 
-from utils import Logger
-from utils import Utils
-
 import threading
 import socket
+
+from src.utils import Logger
+from src.utils import Utils
 
 def resolve_name(name):
     """
@@ -41,11 +41,11 @@ def creates_socket(host, port):
     Binds a socket to the desired port
     """
     try:
-        socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        local_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         host_ip = socket.gethostbyname(host)
-        socket.bind((host_ip, port))
-        host_ip, host_port = socket.getsockname()
-        return host_ip, host_port, socket
+        local_socket.bind((host_ip, port))
+        host_ip, host_port = local_socket.getsockname()
+        return host_ip, host_port, local_socket
             
     except Exception as e:
         raise e
@@ -62,36 +62,37 @@ class Socket:
             self.recv_event = recv_event
             self.recv_queue = recv_queue
 
-            self.host_ip, self.host_port, self.socket = creates_socket(host, int(port))
+            self.host_ip, self.host_port, self.local_socket = creates_socket(host, int(port))
 
             self.stop_event = threading.Event()
             self.receive_thread = Utils.start_thread(self.receive_packets)
-            message = f"Binded to address ({self.host_ip, self.host_port})"
+            message = f"Binded to address {self.host_ip, self.host_port}"
             self.logger.info(message)
 
         except Exception as e:
-            error_message = 'Error creating socket - ' + type(e)+ ': ' + str(e)
-            self.logger.error(error_message)
+            self.logger.error("An error occurred: %s", str(e))
 
-    def receive_packets(self):
+    def receive_packets(self, thread):
         """
         Callback function that receives the packets and stores them in a queue
         """
-        try:
-            i = 0
-            self.socket.setblocking(False)
+        self.local_socket.setblocking(False)
 
-            while not self.stop_event.is_set():
-                packet, source = self.socket.recvfrom(1024)
-                packet_type, packet_data = self.parse_packet(packet)
+        while not self.stop_event.is_set():
+            try:
+                packet, source = self.local_socket.recvfrom(1024)
+                packet_type, packet_payload = self.parse_packet(packet)
 
-                self.recv_queue.put((packet_type, packet_data, source))
+                self.recv_queue.put((packet_type, packet_payload, source))
                 self.recv_event.set()
 
-                self.logger.info('Packet received, source: %s, type: %d, content: %s', source, packet_type, packet_data)
+                self.logger.info('Packet received: source: %s, type: %d, payload: %s', source, packet_type, packet_payload)
+            except BlockingIOError:
+                pass
 
-        except:
-            pass
+            except Exception as e:
+                self.logger.error("An error occurred: %s", str(e))
+
 
     def send(self, destination, packet):
         """
@@ -103,11 +104,10 @@ class Socket:
             destination_port = int(destination_port)
             destination_ip = resolve_name(destination_host)
 
-            self.socket.sendto(packet, (destination_ip, destination_port))
-
+            self.local_socket.sendto(packet, (destination_ip, destination_port))
+            self.logger.info('Packet send: destination: %s, packet: %s', destination, packet)
         except Exception as e:
-            error_message = 'Error sending packet - ' + type(e)+ ': ' + str(e)
-            self.logger.error(error_message)
+            self.logger.error("An error occurred: %s", str(e))
 
     def get_address(self):
         """
@@ -123,10 +123,9 @@ class Socket:
         Stops the socket
         """
         try:
-            self.socket.close()
+            self.local_socket.close()
             self.stop_event.set()
             self.receive_thread.join()
 
         except Exception as e:
-            error_message = 'Error stopping socket - ' + type(e)+ ': ' + str(e)
-            self.logger.error(error_message)
+            self.logger.error("An error occurred: %s", str(e))
