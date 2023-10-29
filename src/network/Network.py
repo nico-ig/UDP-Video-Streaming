@@ -1,13 +1,12 @@
 """
 Deals with forwarding packets and incoming packets callbacks
 """
-
-import Socket
-from utils import Logger
-from utils import Utils
-
 import threading
 import queue
+
+from src.network import Socket
+from src.utils import Logger
+from src.utils import Utils
 
 class Network:
     """
@@ -28,10 +27,9 @@ class Network:
             self.handle_thread = Utils.start_thread(self.handle_packets)
     
         except Exception as e:
-            error_message = 'Error creating network interface - ' + type(e)+ ': ' + str(e)
-            self.logger.error(error_message)
+            self.logger.error("An error occurred: %s", str(e))
 
-    def handle_packets(self):
+    def handle_packets(self, thread):
         """
         Callback function to handle received packets
         """
@@ -51,7 +49,7 @@ class Network:
         """
         try:
             self.callbacks[packet_type] = function
-            message = f"{function.__name__} registered for type {packet_type}"
+            message = f"Callback {function.__name__} registered for type {packet_type}"
             self.logger.info(message)
         except:
             pass
@@ -62,7 +60,7 @@ class Network:
         """
         try:
             del self.callbacks[packet_type]
-            message = f"{function.__name__} unregistered for type {packet_type}"
+            message = f"Callback {function.__name__} unregistered for type {packet_type}"
             self.logger.info(message)
         except:
             pass
@@ -97,5 +95,4 @@ class Network:
             self.handle_thread.join()
 
         except Exception as e:
-            error_message = 'Error stopping network interface - ' + type(e)+ ': ' + str(e)
-            self.logger.error(error_message)
+            self.logger.error("An error occurred: %s", str(e))
