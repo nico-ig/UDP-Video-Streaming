@@ -7,10 +7,13 @@ import struct
 import sys
 import multiprocessing
 import os
+import Musics
 
 dict_client = {}
 dict_watchdog = {}
 children = {}
+musics = {}
+blocksize = 1024 # Power of two that fits in MTU = 1500
 
 host = ""
 port = 0
@@ -26,8 +29,8 @@ def sigint_handler(signum=0, frame=''):
     for child in children.values():
         child.join()
 
-def child_process(host, lider):
-    Streaming.Streaming(host, lider)
+def child_process(host, lider, musics):
+    Streaming.Streaming(host, lider, musics)
 
 def start_new_streaming(source):
     global children
@@ -36,7 +39,7 @@ def start_new_streaming(source):
         children[source].terminate()
         children[source].join()
 
-    children[source] = multiprocessing.Process(target=child_process, args=(host, source,))
+    children[source] = multiprocessing.Process(target=child_process, args=(host, source, musics))
     children[source].start()
 
 def new_port_request(data, source):
@@ -52,10 +55,13 @@ def main():
 
     signal.signal(signal.SIGINT, sigint_handler)
 
-    global host, port, network
+    global host, port, network, musics
 
     host = sys.argv[1]
     port = sys.argv[2]
+
+    musics_folder = "../musics"
+    musics = Musics.Musics(blocksize, musics_folder)
 
     network = Network.Network(host, port)
     network.register_callback(1, new_port_request)
