@@ -13,13 +13,21 @@ handlers:
     class: logging.FileHandler
     level: DEBUG
     formatter: simple
-    filename: ../../logs/<timestamp>.log 
+    filename: logs/<timestamp>.log 
 loggers:
   socket:
     level: DEBUG
     handlers: [console, file_handler] 
     propagate: no
   network:
+    level: DEBUG
+    handlers: [console, file_handler] 
+    propagate: no
+  timer:
+    level: DEBUG
+    handlers: [console, file_handler] 
+    propagate: no
+  client:
     level: DEBUG
     handlers: [console, file_handler] 
     propagate: no

@@ -11,7 +11,6 @@ logger.critical('critical message')
 """
 
 import yaml
-import time
 import logging
 import logging.config
 from datetime import datetime
@@ -31,7 +30,7 @@ def start_logger():
     Starts the logger, it should be called only once per project
     """
     try:
-        with open('../../config/logging.yml', 'r') as config_file:
+        with open('config/logging.yml', 'r') as config_file:
             config = yaml.safe_load(config_file)
 
             current_timestamp = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
