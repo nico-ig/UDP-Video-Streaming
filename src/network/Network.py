@@ -26,7 +26,7 @@ class Network:
             self.host_ip, self.host_port = self.socket.get_address()
 
             self.handle_thread = Utils.start_thread(self.handle_packets)
-
+    
         except Exception as e:
             error_message = 'Error creating network interface - ' + type(e)+ ': ' + str(e)
             self.logger.error(error_message)
