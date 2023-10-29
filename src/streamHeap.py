@@ -12,6 +12,7 @@ import time
 # The item is the segment itself
 class stream_player:
     def __init__(self):
+        self = _
         self.streamHeap = []
         self.lastPlayed = -1
         self.lastHeap = -1      
