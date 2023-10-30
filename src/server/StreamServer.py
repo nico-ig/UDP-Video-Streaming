@@ -150,6 +150,29 @@ def sigint_handler(self_watchdog=''):
 
         if GlobalStream.TIMER != None:
             GlobalStream.TIMER.stop()
-
+ 
     except Exception as e:
         GlobalStream.LOGGER.error("An error occurred: %s", str(e))
+
+def send_packet_to_client(clients, packet):
+    '''
+    Sends a packet to every client
+    '''
+    for client in clients:
+        try:
+            GlobalStream.NETWORK.send(client, packet)
+
+        except Exception as e:
+            GlobalStream.LOGGER.error("An error occurred: %s", str(e))
+
+def send_packets_to_clients(clients, packets):
+    '''
+    Sends all packets to clients (DEBUG ONLY - DELETE LATER)
+    '''
+    for client in clients:
+        for packet in packets:
+            try:
+                GlobalStream.NETWORK.send(client, packet)
+            except Exception as e:
+                GlobalStream.LOGGER.error("An error occurred: %s", str(e))
+        

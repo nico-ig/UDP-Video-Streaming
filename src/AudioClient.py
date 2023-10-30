@@ -1,4 +1,4 @@
-import streamHeap as sh
+import stream_heap as sh
 
 stream = sh.stream_player
 
