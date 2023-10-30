@@ -81,7 +81,7 @@ class Socket:
         while not self.stop_event.is_set():
             try:
                 packet, source = self.local_socket.recvfrom(1024)
-                packet_type, packet_payload = self.parse_packet(packet)
+                packet_type, packet_payload = parse_packet(packet)
 
                 self.recv_queue.put((packet_type, packet_payload, source))
                 self.recv_event.set()
@@ -123,8 +123,8 @@ class Socket:
         Stops the socket
         """
         try:
-            self.local_socket.close()
             self.stop_event.set()
+            self.local_socket.close()
             self.receive_thread.join()
 
         except Exception as e:
