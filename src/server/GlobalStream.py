@@ -1,0 +1,15 @@
+import threading
+
+LIDER = None
+
+PORT_ACK_TIMEOUT = 3
+PORT_ACK_ATTEMPTS = 5
+
+TIMER = None
+LOGGER = None
+NETWORK = None
+
+CLIENTS = set()
+START_EVENT = threading.Event()
+
+REGISTRATION_DURATION = 15
