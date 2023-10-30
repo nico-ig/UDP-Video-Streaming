@@ -1,32 +1,25 @@
-# Deals with recieving packets and adding them to the stream_heap
-
-def callbacks(packet):
-    packet_type = packet[0]
-    
-    '''
-    Descobrir como fazer um switch case em python
-    '''
-    if packet_type == 1:
-        #port_request()
-        pass
-    elif packet_type == 2:
-        #port_allocated()
-        pass
-    elif packet_type == 3:
-        #port_ok_nok()
-        pass
-    elif packet_type == 4:
-        #registration
-        pass
-    elif packet_type ==5:
-        print_available_musics(packet[1])
-    elif packet_type == 6:
-        # Music Choice 
-        # send_music_choice()
-        pass
+import streamHeap
 
 def print_available_musics(music_list):
     print("Available musics:")
+    print("ID / Music Name")
+
+def music_choices():
+    print("Choose a music ID to play it")
+    music_id = input()
+    print("You chose music ID: " + music_id)
+    return music_id
+
+def add_stream_packet(stream_player, packet):
+    key = packet[1]
+    data = packet[2]
+
+    stream_player.add_to_stream(key, data)
+
+
+
+
+
 
 
 #### Dont forget to unregister from other packet types no longer relevants
