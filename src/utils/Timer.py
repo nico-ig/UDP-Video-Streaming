@@ -16,7 +16,7 @@ class Timer:
         try:
             self.logger = Logger.get_logger('timer')
 
-            self._timeout = timeout * 1e9
+            self.timeout = timeout * 1e9
             self.callback = callback
             self.stop_event = threading.Event()
             self.last_kick = time.time_ns()
@@ -35,8 +35,8 @@ class Timer:
                 if (time.time_ns() - self.last_kick >= self.timeout):
                     self.callback()
                     break
-        except:
-            pass
+        except Exception as e:
+            print(f"An error occurred: {str(e)}")
         
     def kick(self):
         """
