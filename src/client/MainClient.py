@@ -11,25 +11,6 @@ from src.utils import Timer
 from src.utils import Logger
 from src.network import Network
 
-GlobalClient.LOGGER = Logger.start_logger()
-GlobalClient.LOGGER = Logger.get_logger('client')
-
-
-def sigint_handler(signum=0, frame=''):
-    """
-    Stops the client when sigint is received
-    """
-    try:
-        if GlobalClient.SERVER_TIMER != None:
-            GlobalClient.SERVER_TIMER.stop()
-
-        if GlobalClient.NETWORK != None:
-            GlobalClient.NETWORK.stop()
-
-        GlobalClient.LOGGER.info("Sigint received")
-    except:
-        pass
-
 
 def main():
     """
@@ -40,9 +21,11 @@ def main():
             print("Usage: python Client.py <Server Name> <Server Port> -j")
             exit()
 
+        GlobalClient.LOGGER = Logger.start_logger()
+        GlobalClient.LOGGER = Logger.get_logger('client')
         GlobalClient.LOGGER.info("Creating client")
 
-        signal.signal(signal.SIGINT, sigint_handler)
+        signal.signal(signal.SIGINT, GlobalClient.SIGINT_HANDLER)
 
         server_name = sys.argv[1]
         server_port = sys.argv[2]
@@ -52,7 +35,7 @@ def main():
         GlobalClient.LOGGER.info("GlobalClient.NETWORK interface created")
 
         GlobalClient.SERVER_TIMER = Timer.Timer(
-            GlobalClient.SERVER_TIMEOUT, sigint_handler)
+            GlobalClient.SERVER_TIMEOUT, GlobalClient.SIGINT_HANDLER)
         GlobalClient.LOGGER.info("Server timer initiated")
 
         option = 'join' if len(
