@@ -5,8 +5,12 @@ Manages the handshake with the server
 from http import server
 from src.packets import UtilsPackets
 from src.packets import TypesPackets
+from src.packets import ClientPackets
 from src.client import GlobalClient
+from src.client import StreamClient
 from src.utils import Timer
+
+register_send = False
 
 def client_handshake(option):
     """
@@ -38,57 +42,71 @@ def send_port_request(self_timer=''):
         GlobalClient.TIMER.kick()
 
         GlobalClient.NETWORK.register_callback(
-            TypesPackets.PORT_ALLOCATED, port_allocated)
+            TypesPackets.PORT_ALLOCATED, ClientPacket.parse_port_allocated)
 
     except Exception as e:
         GlobalClient.LOGGER.error("An error occurred: %s", str(e))
 
-def port_allocated(data, source):
+def port_allocated():
     '''
-    Callback function for when receiving the port allocated from server. Answer with an port ack
+    Deals with the port allocated packet from server. Answer with an port ack
     '''
     try:
-        if len(data) != 0:
-            return
-
-        '''
-        This part should be changed  to compare the ip address, not the name and the ip address
-        source_ip, source_port = source
-        server_ip, server_port = GlobalClient.SERVER
-        
-        if source_ip != server_ip:
-            return
-        '''
         GlobalClient.LOGGER.info("Received port allocated from %s", source)
+
+        GlobalClient.SERVER = source
 
         GlobalClient.SERVER_TIMER.kick()
         GlobalClient.TIMER.stop()
 
         packet = UtilsPackets.mount_byte_packet(TypesPackets.PORT_ACK)
 
-        GlobalClient.SERVER = source
         GlobalClient.LOGGER.info("Sending port ack to %s", GlobalClient.SERVER)
-        GlobalClient.NETWORK.send(source, packet)
+        GlobalClient.NETWORK.send(GlobalClient.SERVER, packet)
 
-        send_registration_packet(source)
+        global register_send
+
+        if not register_send:
+            register_send = True
+            send_registration_packet()
 
     except Exception as e:
         GlobalClient.LOGGER.error("An error occurred: %s", str(e))
 
-def send_registration_packet(server):
-    """
+def send_registration_packet():
+    '''
     Send to server a request to register at a stream
-    """
+    ''' 
     try:
         packet = UtilsPackets.mount_byte_packet(TypesPackets.REGISTER)
 
-        GlobalClient.LOGGER.info("Sending registration to %s", server)
-        GlobalClient.NETWORK.send(server, packet)
+        GlobalClient.LOGGER.info("Sending registration to %s", GlobalClient.SERVER)
+        GlobalClient.NETWORK.send(GlobalClient.SERVER, packet)
     
-        GlobalClient.TIMER = Timer.Timer(GlobalClient.REQUEST_ACK_TIMEOUT, send_registration_packet, GlobalClient.SERVER)
+        GlobalClient.TIMER = Timer.Timer(GlobalClient.REQUEST_ACK_TIMEOUT, send_registration_packet)
         GlobalClient.TIMER.kick()
 
-        ## Registrar a callback pra quando receber o ack do registration, pode ser o start_listening acho
+        GlobalClient.NETWORK.register_callbask(TypesPackets.REGISTER_ACK, ClientPackets.parse_register_ack)
+
     except Exception as e:
         GlobalClient.LOGGER.error("An error occurred: %s", str(e))
 
+def register_ack_received():
+    '''
+    Prepare the client to start listening to the stream
+    '''
+    try:
+        while not GlobalClient.REGISTER_ACK.is_set():
+            pass
+    
+        
+        GlobalClient.LOGGER.info("Register ack received")
+        GlobalClient.unregister_callback(TypesPackets.REGISTER_ACK)
+
+        GlobalClient.TIMER.stop()
+        GlobalClient.TIMER = Timer.Timer(GlobalClient.STREAM_TIMEOUT, GlobalClient.SIGINT_HANDLER)
+    
+        StreamClient.start_listening_to_stream()
+
+    except Exception as e:
+        GlobalClient.LOGGER.error("An error occurred: %s", str(e))

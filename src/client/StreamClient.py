@@ -1,9 +1,11 @@
 from http import server
-import streamHeap
-import Network
-import TypesPackets
 import threading
-import GlobalServer
+from src.packets import ClientPackets
+from src.utils import StreamHeap
+from src.network import Network
+from src.packets import TypesPackets
+from src.server import GlobalServer
+from src.client import GlobalClient
 
 list_received = threading.Event()
 
@@ -18,19 +20,19 @@ def add_stream(data, source):
     GlobalServer.stream.add_to_stream(key, stream)
 
 
-# def start_listening_stream():
-#     network.register_callback(STREAM_PACKET, add_stream_packet)
-#     play_heap()
+def start_listening_stream():
+    Network.register_callback(TypesPackets.STREAM_PACKET, ClientPackets.add_stream_packet)
+    # play_heap()
     
 def print_available_musics(packet):
-    music_list = ClientPacket.parse_music_list(packet)
+    music_list = ClientPackets.parse_music_list(packet)
     print("Available musics:")
     print("ID / Music Name")
     for id, nome in GlobalClient.music_list:
         print(id + " / " + nome)
 
 def music_list(packet):
-    Network.register_callback(TypesPackets.MUSIC_LIST, parse_music_list)
+    Network.register_callback(TypesPackets.MUSIC_LIST, ClientPackets.parse_music_list)
     
     while not list_received.is_set():
         pass
