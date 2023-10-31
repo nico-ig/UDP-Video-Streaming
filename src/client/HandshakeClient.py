@@ -88,6 +88,7 @@ def send_registration_packet(server):
         GlobalClient.TIMER = Timer.Timer(GlobalClient.REQUEST_ACK_TIMEOUT, send_registration_packet, GlobalClient.SERVER)
         GlobalClient.TIMER.kick()
 
+        ## Registrar a callback pra quando receber o ack do registration, pode ser o start_listening acho
     except Exception as e:
         GlobalClient.LOGGER.error("An error occurred: %s", str(e))
 
