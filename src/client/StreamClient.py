@@ -6,6 +6,7 @@ from src.network import Network
 from src.packets import TypesPackets
 from src.server import GlobalServer
 from src.client import GlobalClient
+from src.utils import Timer
 
 list_received = threading.Event()
 
@@ -20,8 +21,17 @@ def add_stream(data, source):
     GlobalServer.stream.add_to_stream(key, stream)
 
 
-def start_listening_stream():
-    Network.register_callback(TypesPackets.STREAM_PACKET, ClientPackets.add_stream_packet)
+def start_listening_to_stream():
+
+    GlobalClient.TIMER.stop()
+    GlobalClient.NETWORK.register_callback(TypesPackets.STREAM_PACKET, add_stream)
+
+# Parar esse timer quando receber o primeiro pacote de stream, e não quando entrar nessa função, ou algo assim
+# Quando a stream começar também desrregistrar o port_allocated
+    GlobalClient.LOGGER.info("Registration timer stopped")
+    GlobalClient.SERVER_TIMER = Timer.Timer(GlobalClient.STREAM_TIMEOUT, GlobalClient.SIGINT_HANDLER)
+    GlobalClient.LOGGER.debug("Stream packets timer initiated")
+
     # play_heap()
     
 def print_available_musics(packet):

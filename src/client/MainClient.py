@@ -23,7 +23,7 @@ def main():
 
         GlobalClient.LOGGER = Logger.start_logger()
         GlobalClient.LOGGER = Logger.get_logger('client')
-        GlobalClient.LOGGER.info("Creating client")
+        GlobalClient.LOGGER.info("Starting client")
 
         signal.signal(signal.SIGINT, GlobalClient.SIGINT_HANDLER)
 
@@ -32,11 +32,7 @@ def main():
         GlobalClient.SERVER = (server_name, server_port)
 
         GlobalClient.NETWORK = Network.Network()
-        GlobalClient.LOGGER.info("GlobalClient.NETWORK interface created")
-
-        GlobalClient.SERVER_TIMER = Timer.Timer(
-            GlobalClient.SERVER_TIMEOUT, GlobalClient.SIGINT_HANDLER)
-        GlobalClient.LOGGER.info("Server timer initiated")
+        GlobalClient.LOGGER.debug("Network interface created")
 
         option = 'join' if len(
             sys.argv) == 4 and sys.argv[3] == "-j" else 'new'
