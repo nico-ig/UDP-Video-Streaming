@@ -1,13 +1,14 @@
 import threading
 
-LIDER = None
+INTERVAL = 500_000      # Interval in ns between stream packets
 
-PORT_ACK_TIMEOUT = 3
-PORT_ACK_ATTEMPTS = 5
+LIDER = None
 
 TIMER = None
 LOGGER = None
 NETWORK = None
+
+PORT_ALLOCATED_TIMEOUT = 5
 
 CLIENTS = set()
 START_EVENT = threading.Event()

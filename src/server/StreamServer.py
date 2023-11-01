@@ -6,6 +6,7 @@ This should run in a separeted process from the main server
 
 from ast import Global
 import signal
+import struct
 
 from src.server import GlobalStream
 from src.network import Network
@@ -29,40 +30,34 @@ def new_stream(server, lider):
         GlobalStream.LIDER = lider
 
         GlobalStream.NETWORK = Network.Network(server)
-        GlobalStream.LOGGER.info("GlobalStream.NETWORK interface created")
+        GlobalStream.LOGGER.info("GlobalStream.NETWORK interface created for %s", lider)
 
+        GlobalStream.LOGGER.info("Starting port ack received timer for %s", lider)
+        GlobalStream.LIDER_TIMER = Timer.Timer(GlobalStream.REGISTRATION_DURATION, sigint_handler)
         send_port_allocated()
-        start_streaming()
+        start_registration()
 
     except Exception as e:
         GlobalStream.LOGGER.error("An error occurred: %s", str(e))
 
-def send_port_allocated():
+def send_port_allocated(self_timer=''):
     '''
     Send port allocated to lider client
     '''
     try:
-        if GlobalStream.PORT_ACK_ATTEMPTS > 0:
-            GlobalStream.PORT_ACK_ATTEMPTS -= 1
+        GlobalStream.LOGGER.info("Sending port allocated to lider %s", GlobalStream.LIDER)
+        packet = UtilsPackets.mount_byte_packet(TypesPackets.PORT_ALLOCATED)
+        GlobalStream.NETWORK.send(GlobalStream.LIDER, packet)
 
-            packet = UtilsPackets.mount_byte_packet(TypesPackets.PORT_ALLOCATED)
 
-            GlobalStream.LOGGER.info("Sending port allocated to lider %s", GlobalStream.LIDER)
-            GlobalStream.NETWORK.send(GlobalStream.LIDER, packet)
+        if GlobalStream.TIMER is not None:
+            GlobalStream.TIMER.stop()
 
-            if GlobalStream.TIMER == None:
-                GlobalStream.NETWORK.register_callback(TypesPackets.PORT_ACK, port_ack_received)
-                GlobalStream.NETWORK.register_callback(TypesPackets.REGISTER, new_client)
-            else:
-                GlobalStream.TIMER.stop()
-                
-            GlobalStream.TIMER = Timer.Timer(GlobalStream.PORT_ACK_TIMEOUT, send_port_allocated)
-            GlobalStream.LOGGER.info("Port ACK timer registerd for lider %s", GlobalStream.LIDER)
+        GlobalStream.LOGGER.info("Starting port allocated retransmit timer for %s", GlobalStream.LIDER)
+        GlobalStream.TIMER = Timer.Timer(GlobalStream.PORT_ALLOCATED_TIMEOUT, send_port_allocated)
 
-        else:
-            GlobalStream.LOGGER.info("No more attempts to receive port ack from %s", GlobalStream.LIDER)
-            sigint_handler()
-            
+        GlobalStream.NETWORK.register_callback(TypesPackets.PORT_ACK, port_ack_received)
+        
     except Exception as e:
         GlobalStream.LOGGER.error("An error occurred: %s", str(e))
 
@@ -81,11 +76,35 @@ def port_ack_received(data, source):
             GlobalStream.LOGGER.info("Port ACK send by %s and not %s", source, GlobalStream.LIDER)
             return
 
-        GlobalStream.TIMER.stop()
+        GlobalStream.LOGGER.info("Port ack from %s received, stopping timer", source)
+        GlobalStream.LIDER_TIMER.stop()
         GlobalStream.NETWORK.unregister_callback(TypesPackets.PORT_ACK)
 
+    except Exception as e:
+        GlobalStream.LOGGER.error("An error occurred: %s", str(e))
+
+def start_registration():
+    '''
+    Starts the registration
+    '''
+    try:
+        GlobalStream.TIMER.stop()
+        GlobalStream.LOGGER.info("Starting registration timer for lider %s", GlobalStream.LIDER)
         GlobalStream.TIMER = Timer.Timer(GlobalStream.REGISTRATION_DURATION, registration_finished)
-        GlobalStream.LOGGER.info("Registration timer registered for lider %s", GlobalStream.LIDER)
+
+        GlobalStream.LOGGER.info("Waiting for clients to register for lider %s", GlobalStream.LIDER)
+        GlobalStream.NETWORK.register_callback(TypesPackets.REGISTER, new_client)
+
+        while not GlobalStream.START_EVENT.is_set():
+            pass
+
+        GlobalStream.LOGGER.info("Registration finished for lider %s", GlobalStream.LIDER)
+
+        if len(GlobalStream.CLIENTS) < 1:
+            GlobalStream.LOGGER.info("No client registered for stream")
+            sigint_handler()
+            
+        GlobalStream.LOGGER.info("Should start streaming, registered clients are: %s", GlobalStream.CLIENTS)
 
     except Exception as e:
         GlobalStream.LOGGER.error("An error occurred: %s", str(e))
@@ -102,6 +121,8 @@ def new_client(data, source):
         GlobalStream.LOGGER.info("New client %s registerd", source)
 
         packet = UtilsPackets.mount_byte_packet(TypesPackets.REGISTER_ACK)
+        packet += struct.pack('Q', GlobalStream.TIMER.remaining_time())
+        packet += struct.pack('Q', GlobalStream.INTERVAL)
 
         GlobalStream.LOGGER.info("Sending register ack to client %s", source)
         GlobalStream.NETWORK.send(source, packet) 
@@ -122,29 +143,12 @@ def registration_finished(self_timer=''):
     except Exception as e:
         GlobalStream.LOGGER.error("An error occurred: %s", str(e))
 
-def start_streaming():
-    '''
-    Starts the stream
-    '''
-    try:
-        while not GlobalStream.START_EVENT.is_set():
-            pass
-
-        if len(GlobalStream.CLIENTS) < 1:
-            GlobalStream.LOGGER.info("No client registered for stream")
-            sigint_handler()
-            
-        GlobalStream.LOGGER.info("Should start streaming, registered clients are: %s", GlobalStream.CLIENTS)
-        GlobalStream.TIMER.stop()
-
-    except Exception as e:
-        GlobalStream.LOGGER.error("An error occurred: %s", str(e))
-
-def sigint_handler(self_watchdog=''):
+def sigint_handler(signum = 0, fram = ''):
     """
     Callback function to stop the stream when sigint is received
     """
     try:
+        GlobalStream.LOGGER.info("Sigint received to stream with client lider %s", GlobalStream.LIDER)
         if GlobalStream.NETWORK != None:
             GlobalStream.NETWORK.stop()
 

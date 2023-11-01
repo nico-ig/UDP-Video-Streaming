@@ -1,4 +1,4 @@
-import StreamHeap as sh
+from src.utils import StreamHeap as sh
 
 DICT_CLIENT = {}
 DICT_WATCHDOG = {}

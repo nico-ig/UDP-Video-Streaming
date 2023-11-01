@@ -7,6 +7,7 @@ import sys
 
 from src.server import GlobalServer
 from src.server import HandshakeServer
+from src.server import GlobalStream
 from src.network import Network
 from src.utils import Logger
 
@@ -33,8 +34,11 @@ def main():
     """
     try:
         if len(sys.argv) < 3:
-            print("Usage: python Server.py <hostname> <port>")
+            print("Usage: python Server.py <hostname> <port> <interval ns(optional>)")
             exit()
+
+        if len(sys.argv) >= 4:
+            GlobalStream.INTERVAL = sys.argv[3]
 
         GlobalServer.LOGGER = Logger.start_logger()
         GlobalServer.LOGGER = Logger.get_logger('server')
