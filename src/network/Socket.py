@@ -8,17 +8,6 @@ import socket
 from src.utils import Logger
 from src.utils import Utils
 
-def resolve_name(name):
-    """
-    Gets the ip address for a given name
-    """
-    try:
-        ip_addr = socket.gethostbyname(name)
-    except:
-        ip_addr = name
-    finally:
-        return ip_addr
-
 def parse_packet(packet):
     """
     Gets the type and the payload from packet
@@ -66,13 +55,12 @@ class Socket:
 
             self.stop_event = threading.Event()
             self.receive_thread = Utils.start_thread(self.receive_packets)
-            message = f"Binded to address {self.host_ip, self.host_port}"
-            self.logger.info(message)
+            self.logger.debug("Binded to address %s", host)
 
         except Exception as e:
             self.logger.error("An error occurred: %s", str(e))
 
-    def receive_packets(self, thread):
+    def receive_packets(self):
         """
         Callback function that receives the packets and stores them in a queue
         """
@@ -86,7 +74,7 @@ class Socket:
                 self.recv_queue.put((packet_type, packet_payload, source))
                 self.recv_event.set()
 
-                self.logger.info('Packet received: source: %s, type: %d, payload: %s', source, packet_type, packet_payload)
+                self.logger.debug('Packet received: source: %s, type: %d, payload: %s', source, packet_type, packet_payload)
             except BlockingIOError:
                 pass
 
@@ -102,10 +90,10 @@ class Socket:
             destination_host, destination_port = destination
 
             destination_port = int(destination_port)
-            destination_ip = resolve_name(destination_host)
+            destination_ip = Utils.resolve_name(destination_host)
 
             self.local_socket.sendto(packet, (destination_ip, destination_port))
-            self.logger.info('Packet send: destination: %s, packet: %s', destination, packet)
+            self.logger.debug('Packet send: destination: %s, packet: %s', destination, packet)
         except Exception as e:
             self.logger.error("An error occurred: %s", str(e))
 

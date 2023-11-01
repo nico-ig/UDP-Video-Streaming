@@ -29,7 +29,7 @@ class Network:
         except Exception as e:
             self.logger.error("An error occurred: %s", str(e))
 
-    def handle_packets(self, thread):
+    def handle_packets(self):
         """
         Callback function to handle received packets
         """
@@ -49,8 +49,7 @@ class Network:
         """
         try:
             self.callbacks[packet_type] = function
-            message = f"Callback {function.__name__} registered for type {packet_type}"
-            self.logger.info(message)
+            self.logger.debug("Callback %s registered for type %d", function.__name__, packet_type)
         except:
             pass
 
@@ -60,8 +59,7 @@ class Network:
         """
         try:
             del self.callbacks[packet_type]
-            message = f"Callback {function.__name__} unregistered for type {packet_type}"
-            self.logger.info(message)
+            self.logger.debug("Callback unregistered for type %d", packet_type)
         except:
             pass
 
