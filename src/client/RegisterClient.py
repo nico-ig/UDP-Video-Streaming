@@ -2,7 +2,6 @@
 Register a client to an already open stream
 '''
 
-from ast import Global
 from src.packets import UtilsPackets
 from src.packets import TypesPackets
 from src.packets import ClientPackets

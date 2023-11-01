@@ -12,6 +12,7 @@ from src.server import GlobalStream
 from src.network import Network
 from src.packets import TypesPackets
 from src.packets import UtilsPackets
+from src.packets import ServerPackets
 from src.utils import Timer
 from src.utils import Logger
 
@@ -58,33 +59,8 @@ def send_port_allocated():
         GlobalStream.TIMER = Timer.Timer(GlobalStream.PORT_ALLOCATED_TIMEOUT, send_port_allocated)
         GlobalStream.LOGGER.debug("Port allocated retransmit timer initiated")
 
-        GlobalStream.NETWORK.register_callback(TypesPackets.PORT_ACK, port_ack_received)
+        GlobalStream.NETWORK.register_callback(TypesPackets.PORT_ACK, ServerPackets.parse_port_ack)
         
-    except Exception as e:
-        GlobalStream.LOGGER.error("An error occurred: %s", str(e))
-
-def port_ack_received(data, source):
-    '''
-    Deals with port ack incoming packets
-    '''
-    try:
-        if len(data) != 0:
-            return
-
-        source_ip, source_port = source
-        lider_ip, lider_port = GlobalStream.LIDER
-
-        if source_ip != lider_ip:
-            GlobalStream.LOGGER.debug("Port ACK send by %s and not %s", source, GlobalStream.LIDER)
-            return
-
-        GlobalStream.LOGGER.info("Port ack received")
-
-        GlobalStream.LIDER_TIMER.stop()
-        GlobalStream.LOGGER.debug("Port allocated retransmit timer stopped")
-
-        GlobalStream.NETWORK.unregister_callback(TypesPackets.PORT_ACK)
-
     except Exception as e:
         GlobalStream.LOGGER.error("An error occurred: %s", str(e))
 
