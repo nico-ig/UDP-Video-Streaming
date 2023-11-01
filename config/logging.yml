@@ -1,8 +1,11 @@
 version: 1
 formatters:
   simple:
-    format: "[PID:%(process)d] -- [%(levelname)s] -- [%(asctime)s] -- [%(filename)s:%(funcName)s:%(lineno)d] -- [%(message)s]"
-    datefmt: "%Y-%m-%d %H:%M:%S"
+    format: "[PID:%(process)d] -- [%(levelname)s] -- [%(asctime)s.%(msecs)03d] -- [%(message)s]"
+    datefmt: "%d-%m-%Y %H:%M:%S"
+  debug:
+    format: "[PID:%(process)d] -- [%(levelname)s] -- [%(asctime)s.%(msecs)03d] -- [%(filename)s:%(funcName)s:%(lineno)d] -- [%(message)s]"
+    datefmt: "%d-%m-%Y %H:%M:%S"
 handlers:
   console:
     class: logging.StreamHandler
@@ -16,35 +19,35 @@ handlers:
     filename: logs/<timestamp>.log
 loggers:
   socket:
-    level: DEBUG
+    level: INFO
     handlers: [console, file_handler]
     propagate: no
 
   network:
-    level: DEBUG
+    level: INFO
     handlers: [console, file_handler]
     propagate: no
 
   timer:
-    level: DEBUG
+    level: INFO
     handlers: [console, file_handler]
     propagate: no
 
   client:
-    level: DEBUG
+    level: INFO
     handlers: [console, file_handler]
     propagate: no
 
   server:
-    level: DEBUG
+    level: INFO
     handlers: [console, file_handler]
     propagate: no
 
   stream-server:
-    level: DEBUG
+    level: INFO
     handlers: [console, file_handler]
     propagate: no
 
 root:
-  level: DEBUG
+  level: INFO
   handlers: [console, file_handler]
