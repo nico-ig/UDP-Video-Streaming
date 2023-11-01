@@ -22,7 +22,7 @@ class Timer:
             self.stop_event = threading.Event()
             self.last_kick = time.time_ns()
 
-            self.timer_thread = Utils.start_thread(self.timer)
+            self.timer_thread = Utils.start_thread(self.timer, True)
 
         except Exception as e:
             self.logger.error("An error occurred: %s", str(e))
@@ -34,8 +34,12 @@ class Timer:
         try:
             while not self.stop_event.is_set():
                 if (time.time_ns() - self.last_kick >= self.timeout):
-                    self.callback(self.args)
+                    if self.args != '':
+                        self.callback(self.args)
+                    else:
+                        self.callback()
                     break
+
         except Exception as e:
             print(f"An error occurred: {str(e)}")
         

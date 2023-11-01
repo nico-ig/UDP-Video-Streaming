@@ -1,4 +1,4 @@
-"""
+'''
 Creates and manages the logger.
 
 Example: \\
@@ -8,7 +8,7 @@ logger.info('info message') \\
 logger.warning('warn message') \\
 logger.error('error message') \\
 logger.critical('critical message')
-"""
+'''
 
 import yaml
 import logging
@@ -17,18 +17,18 @@ from datetime import datetime
 
 
 def get_logger(name):
-    """
+    '''
     Gets a logger by name
-    """
+    '''
     try:
         return logging.getLogger(name)
     except:
         logging.error('Failed to get logger')
 
 def start_logger():
-    """
+    '''
     Starts the logger, it should be called only once per project
-    """
+    '''
     try:
         with open('config/logging.yml', 'r') as config_file:
             config = yaml.safe_load(config_file)

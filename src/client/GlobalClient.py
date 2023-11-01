@@ -2,6 +2,7 @@
 Global values for the client
 '''
 
+from re import S
 import threading
 
 from src.packets import TypesPackets
@@ -13,16 +14,29 @@ SERVER_TIMER = None
 TIMER = None
 LOGGER = None           
 
+HANDSHAKE_TIMEOUT = 10
 SERVER_TIMEOUT = 5              # Time in seconds before timeouting when not receiving packets from server
 RETRANSMIT_TIMEOUT = 3    # Time in seconds before sending NEW_PORT_REQUEST again
-REQUEST_ACK_TIMEOUT = 3         # Time in seconds before sending REGISTER again
 
-REGISTER_DURATION = 0      # The durantion of the registration phase received by the server
+REGISTER_DURATION = 10      # The durantion of the registration phase received by the server
 
 STREAM_TIMEOUT =  10      # The start value in the amount of intervals between stream packets before timeouting
 
 PORT_ALLOCATED = threading.Event()
 REGISTER_ACK = threading.Event()
+STREAM_STARTED = threading.Event()
+
+def CLOSE_CLIENT(close_stream_not_started=False):
+    '''
+    Handle the end of handhsake/registration timer
+    '''
+    try:
+        if (close_stream_not_started and not STREAM_STARTED.is_set()) or not REGISTER_ACK.is_set():
+            LOGGER.info("Couldn't start stream")
+            SIGINT_HANDLER()
+
+    except Exception as e:
+        LOGGER.error("An error occurred: %s", str(e))
 
 def SIGINT_HANDLER(signum=0, frame=''):
     '''

@@ -5,36 +5,42 @@ Receives the request for new streams
 import multiprocessing
 
 from src.packets import TypesPackets
+from src.packets import ServerPackets
 from src.server import GlobalServer
 from src.server import StreamServer
 
-def start_new_streaming(data, source):
+def server_handshake():
     '''
-    Starts a new process to deal with the client stream
+    Perform the handshake with the clients
     '''
     try:
-        if len(data) != 0:
-            return
+        GlobalServer.NETWORK.register_callback(TypesPackets.NEW_PORT_REQUEST, ServerPackets.parse_new_client)
 
-        if source in GlobalServer.CHILDREN:
-            GlobalServer.LOGGER.info("Terminating process for client %s", source)
-            GlobalServer.CHILDREN[source].terminate()
-            GlobalServer.CHILDREN[source].join()
+        while not GlobalServer.STOP_EVENT.is_set():
+            GlobalServer.LOGGER.info("Waiting for clients")
+            client = GlobalServer.CLIENTS_QUEUE.get()
 
-        GlobalServer.LOGGER.info("Starting a new process for client %s", source)
-        GlobalServer.CHILDREN[source] = multiprocessing.Process(target=StreamServer.new_stream, args=(GlobalServer.SERVER_NAME, source))
-        GlobalServer.CHILDREN[source].start()
+            start_new_streaming(client)
 
     except Exception as e:
         GlobalServer.LOGGER.error("An error occurred: %s", str(e))
 
-def server_handshake():
+def start_new_streaming(client):
     '''
-    Perform the handshake with the server
+    Starts a new process to deal with the client stream
     '''
     try:
-        GlobalServer.LOGGER.info("Waiting for clients")
-        GlobalServer.NETWORK.register_callback(TypesPackets.NEW_PORT_REQUEST, start_new_streaming)
+        if GlobalServer.STOP_EVENT.is_set():
+            return
+
+        if client in GlobalServer.CHILDREN:
+            GlobalServer.LOGGER.info("Terminating process for client %s", client)
+            GlobalServer.CHILDREN[client].terminate()
+            GlobalServer.CHILDREN[client].join()
+
+        GlobalServer.LOGGER.info("Starting a new process for client %s", client)
+        GlobalServer.CHILDREN[client] = multiprocessing.Process(target=StreamServer.new_stream, args=(GlobalServer.SERVER_NAME, client))
+        GlobalServer.CHILDREN[client].start()
 
     except Exception as e:
         GlobalServer.LOGGER.error("An error occurred: %s", str(e))

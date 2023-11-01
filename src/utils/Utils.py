@@ -18,12 +18,8 @@ def deserialize_str(packet):
     packet = packet[length:]
     return msg, packet
 
-def start_thread(callback, args_callback = '', daemon=False):
-    if args_callback == '':
-        thread = threading.Thread(target=callback)
-    else:
-        thread = threading.Thread(target=callback, args=(args_callback, ))
-        
+def start_thread(callback, daemon=False):
+    thread = threading.Thread(target=callback)
     thread.daemon = daemon
     thread.start()
 

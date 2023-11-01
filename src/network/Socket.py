@@ -1,6 +1,6 @@
-"""
+'''
 Deals directly with the socket management
-"""
+'''
 
 import threading
 import socket
@@ -9,9 +9,9 @@ from src.utils import Logger
 from src.utils import Utils
 
 def parse_packet(packet):
-    """
+    '''
     Gets the type and the payload from packet
-    """
+    '''
     try:
         if len(packet) < 1:
             return None, None
@@ -26,9 +26,9 @@ def parse_packet(packet):
 
 
 def creates_socket(host, port):
-    """
+    '''
     Binds a socket to the desired port
-    """
+    '''
     try:
         local_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         host_ip = socket.gethostbyname(host)
@@ -40,15 +40,14 @@ def creates_socket(host, port):
         raise e
 
 class Socket:
-    """
+    '''
     Creates and manage a socket
-    """
-    def __init__(self, host, port, recv_event, recv_queue):
+    '''
+    def __init__(self, host, port, recv_queue):
         try:
             self.logger = Logger.get_logger('socket')
 
             self.host_name = host 
-            self.recv_event = recv_event
             self.recv_queue = recv_queue
 
             self.host_ip, self.host_port, self.local_socket = creates_socket(host, int(port))
@@ -61,9 +60,9 @@ class Socket:
             self.logger.error("An error occurred: %s", str(e))
 
     def receive_packets(self):
-        """
+        '''
         Callback function that receives the packets and stores them in a queue
-        """
+        '''
         self.local_socket.setblocking(False)
 
         while not self.stop_event.is_set():
@@ -72,7 +71,6 @@ class Socket:
                 packet_type, packet_payload = parse_packet(packet)
 
                 self.recv_queue.put((packet_type, packet_payload, source))
-                self.recv_event.set()
 
                 self.logger.debug('Packet received: source: %s, type: %d, payload: %s', source, packet_type, packet_payload)
             except BlockingIOError:
@@ -83,9 +81,9 @@ class Socket:
 
 
     def send(self, destination, packet):
-        """
+        '''
         Sends though the socket the packet to the destination
-        """
+        '''
         try:
             destination_host, destination_port = destination
 
@@ -98,18 +96,18 @@ class Socket:
             self.logger.error("An error occurred: %s", str(e))
 
     def get_address(self):
-        """
+        '''
         Gets the address associated with the socket
-        """
+        '''
         try:
             return self.host_ip, self.host_port
         except:
             pass
 
     def stop(self):
-        """ 
+        ''' 
         Stops the socket
-        """
+        '''
         try:
             self.stop_event.set()
             self.local_socket.close()

@@ -1,6 +1,6 @@
-"""
+'''
 Packets types and it's types value
-"""
+'''
 
 NEW_PORT_REQUEST = 1    # Client -> Server
 PORT_ALLOCATED = 2      # Server -> Client

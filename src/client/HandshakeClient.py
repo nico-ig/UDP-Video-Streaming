@@ -15,16 +15,17 @@ def client_handshake(option):
     Perform the handshake with the server
     '''
     try:
+        Timer.Timer(GlobalClient.HANDSHAKE_TIMEOUT, GlobalClient.CLOSE_CLIENT)
+        
         if option == 'join':
             GlobalClient.LOGGER.info("Joining stream")
-            new_stream_thread = None
 
         else:
             GlobalClient.LOGGER.info("Entering new stream")
-            Utils.start_thread(OpenStreamClient.open_stream_in_server, '', True)
+            Utils.start_thread(OpenStreamClient.open_stream_in_server, True)
 
-        Utils.start_thread(RegisterClient.register_to_stream, '', True)
-        #StreamClient.start_listening_to_stream()
+        Utils.start_thread(RegisterClient.register_to_stream, True)
+        StreamClient.listen_to_stream()
 
     except Exception as e:
         GlobalClient.LOGGER.error("An error occurred: %s", str(e))

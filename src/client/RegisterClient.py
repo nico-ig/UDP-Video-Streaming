@@ -9,8 +9,6 @@ from src.packets import ClientPackets
 from src.client import GlobalClient
 from src.utils import Timer
 
-timer = None
-
 def register_to_stream():
     '''
     Register to an already open stream in the server
@@ -18,25 +16,27 @@ def register_to_stream():
     try:
         GlobalClient.LOGGER.info("Registration started")
 
-        global timer
-        GlobalClient.LOGGER.debug("Starting registration retransmit timer")
-        timer = Timer.Timer(GlobalClient.REQUEST_ACK_TIMEOUT, send_registration_packet)
-
         send_registration_packet()
         prepare_to_listen_to_stream()
 
     except Exception as e:
         GlobalClient.LOGGER.error("An error occurred: %s", str(e))
 
-def send_registration_packet(self=''):
+def send_registration_packet():
     '''
     Send to server a request to register at a stream
     ''' 
     try:
-        GlobalClient.LOGGER.debug("Sending registration")
+        if GlobalClient.REGISTER_ACK.is_set():
+            GlobalClient.LOGGER.debug("Registration retransmit timer stopped")
+            return
+            
         packet = UtilsPackets.mount_byte_packet(TypesPackets.REGISTER)
         GlobalClient.NETWORK.send(GlobalClient.SERVER, packet)
-        timer.kick()
+        GlobalClient.LOGGER.debug("Registration send")
+
+        Timer.Timer(GlobalClient.RETRANSMIT_TIMEOUT, send_registration_packet)
+        GlobalClient.LOGGER.debug("Registration retransmit timer initiated")
 
     except Exception as e:
         GlobalClient.LOGGER.error("An error occurred: %s", str(e))
@@ -48,17 +48,13 @@ def prepare_to_listen_to_stream():
     try:
         GlobalClient.NETWORK.register_callback(TypesPackets.REGISTER_ACK, ClientPackets.parse_register_ack)
 
-        while not GlobalClient.REGISTER_ACK.is_set():
-            pass
+        GlobalClient.REGISTER_ACK.wait()
     
         GlobalClient.LOGGER.info("Register ack received")
         GlobalClient.NETWORK.unregister_callback(TypesPackets.REGISTER_ACK)
 
-        timer.stop()
-        GlobalClient.LOGGER.debug("Registration retransmit timer stopped")
-
         GlobalClient.LOGGER.debug("Starting timer for remaining registration duration with %ss", GlobalClient.REGISTER_DURATION)
-        GlobalClient.TIMER = Timer.Timer(GlobalClient.REGISTER_DURATION * 2, GlobalClient.SIGINT_HANDLER)
+        Timer.Timer(GlobalClient.REGISTER_DURATION * 2, GlobalClient.CLOSE_CLIENT, True)
         
     except Exception as e:
         GlobalClient.LOGGER.error("An error occurred: %s", str(e))

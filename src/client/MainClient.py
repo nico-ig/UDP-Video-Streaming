@@ -1,6 +1,6 @@
-"""
+'''
 Creates and manages the client
-"""
+'''
 
 import signal
 import sys
@@ -13,9 +13,9 @@ from src.network import Network
 
 
 def main():
-    """
+    '''
     Starts and manages the client
-    """
+    '''
     try:
         if len(sys.argv) < 3:
             print("Usage: python Client.py <Server Name> <Server Port> -j")
