@@ -5,6 +5,7 @@ Global values for the client
 import threading
 
 from src.utils import Logger
+from src.utils import StreamHeap as sh
 
 NETWORK = None          # Network interface
 SERVER = None           # Server address
@@ -22,6 +23,8 @@ STREAM_TIMEOUT =  10      # The start value in the amount of intervals between s
 PORT_ALLOCATED = threading.Event()
 REGISTER_ACK = threading.Event()
 STREAM_STARTED = threading.Event()
+
+STREAM = sh.stream_player
 
 def CLOSE_CLIENT(close_stream_not_started=False):
     '''
