@@ -10,7 +10,7 @@ from src.client import GlobalClient as gc
 from src.utils import StreamHeap as sh
 from src.utils import Packets
 
-file_path = "../musics/musics.mp3"
+file_path = "musics"
 file_blocksize = 2048   # Power of two that fits in MTU = 1500
 # h = []
 event = threading.Event()
@@ -32,7 +32,7 @@ def callback(outdata, frames, time, status):
 def reproduce_stream(): # Call this function after the "STREAM_PACKET" is received
     try:
         packets_array = []
-        file_samplerate, file_channels = Packets.create_musics_packets(packets_array, file_blocksize, file_path)
+        file_samplerate, file_channels = Packets.create_musics_packets(file_blocksize, file_path)
         for i in range(0, len(packets_array), 1):
             packet = packets_array[i]
             seq = struct.unpack('Q', packet[:8])

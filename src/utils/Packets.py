@@ -37,10 +37,12 @@ def mount_music_packets(blocksize, file_path):
         except Exception as e:
             print(type(e).__name__ + ': ' + str(e))
 
-def create_musics_packets(musics, blocksize, folder_path):
+def create_musics_packets(blocksize, folder_path):
     try:
+        musics = []
         for filename in os.listdir(folder_path):
             file_path = folder_path + '/' + filename
+            print(f"Creating packets for {file_path}")
             music = mount_music_packets(blocksize, file_path)
             musics.append(music)
         return musics
@@ -48,6 +50,6 @@ def create_musics_packets(musics, blocksize, folder_path):
         print(type(e).__name__ + ': ' + str(e))
 
 # Example usage
-#blocksize = 1024     # Size of each fragment
-#musics_folder = '../musics' 
-#musics = create_musics_packets(blocksize, musics_folder)
+# blocksize = 1024     # Size of each fragment
+# musics_folder = 'musics' 
+# musics = create_musics_packets(blocksize, musics_folder)
