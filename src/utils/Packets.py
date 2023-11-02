@@ -1,7 +1,7 @@
 import soundfile as sf
 import struct
+from src.utils import Utils
 import os
-import Utils
 
 subtype_to_bit_depth = {
         'PCM_16': 16,
@@ -37,9 +37,8 @@ def mount_music_packets(blocksize, file_path):
         except Exception as e:
             print(type(e).__name__ + ': ' + str(e))
 
-def create_musics_packets(blocksize, folder_path):
+def create_musics_packets(musics, blocksize, folder_path):
     try:
-        musics = []
         for filename in os.listdir(folder_path):
             file_path = folder_path + '/' + filename
             music = mount_music_packets(blocksize, file_path)
