@@ -1,7 +1,7 @@
 import soundfile as sf
 import struct
+from src.utils import Utils
 import os
-import Utils
 
 subtype_to_bit_depth = {
         'PCM_16': 16,
@@ -42,6 +42,7 @@ def create_musics_packets(blocksize, folder_path):
         musics = []
         for filename in os.listdir(folder_path):
             file_path = folder_path + '/' + filename
+            print(f"Creating packets for {file_path}")
             music = mount_music_packets(blocksize, file_path)
             musics.append(music)
         return musics
@@ -49,6 +50,6 @@ def create_musics_packets(blocksize, folder_path):
         print(type(e).__name__ + ': ' + str(e))
 
 # Example usage
-#blocksize = 1024     # Size of each fragment
-#musics_folder = '../musics' 
-#musics = create_musics_packets(blocksize, musics_folder)
+# blocksize = 1024     # Size of each fragment
+# musics_folder = 'musics' 
+# musics = create_musics_packets(blocksize, musics_folder)
