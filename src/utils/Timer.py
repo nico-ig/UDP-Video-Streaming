@@ -20,7 +20,7 @@ class Timer:
             self.stop_event = threading.Event()
             self.last_kick = time.time_ns()
 
-            self.timer_thread = Utils.start_thread(self.timer, True)
+            self.timer_thread = Utils.start_thread(self.timer)
 
         except Exception as e:
             Logger.LOGGER.error("An error occurred: %s", str(e))
@@ -65,5 +65,6 @@ class Timer:
         '''
         try:
             self.stop_event.set()
+            self.timer_thread.join()
         except:
             pass
