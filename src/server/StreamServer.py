@@ -34,9 +34,10 @@ def new_stream(server, lider):
         Logger.LOGGER.debug("Network interface created")
         Logger.LOGGER.info("Stream port is: %s", GlobalStream.NETWORK.get_port())
 
-        Logger.LOGGER.debug("Starting port ack received timer")
+        GlobalStream.NETWORK.register_callback(TypesPackets.PORT_ACK, ServerPackets.parse_port_ack)
         GlobalStream.LIDER_TIMER = Timer.Timer(GlobalStream.REGISTRATION_DURATION, sigint_handler)
-
+        Logger.LOGGER.debug("Port ack received timer started")
+        
         send_port_allocated()
         start_registration()
 
@@ -58,8 +59,6 @@ def send_port_allocated():
         Timer.Timer(GlobalStream.PORT_ALLOCATED_TIMEOUT, send_port_allocated)
         Logger.LOGGER.debug("Port allocated retransmit timer initiated")
 
-        GlobalStream.NETWORK.register_callback(TypesPackets.PORT_ACK, ServerPackets.parse_port_ack)
-        
     except Exception as e:
         Logger.LOGGER.error("An error occurred: %s", str(e))
 
@@ -68,7 +67,7 @@ def start_registration():
     Starts the registration
     '''
     try:
-        Timer.Timer(GlobalStream.REGISTRATION_DURATION, registration_finished)
+        GlobalStream.TIMER = Timer.Timer(GlobalStream.REGISTRATION_DURATION, registration_finished)
         Logger.LOGGER.debug("Registration timer started")
 
         GlobalStream.NETWORK.register_callback(TypesPackets.REGISTER, ServerPackets.parse_new_registration)
