@@ -2,17 +2,14 @@
 Global values for the client
 '''
 
-from re import S
 import threading
 
-from src.packets import TypesPackets
-
+from src.utils import Logger
 
 NETWORK = None          # Network interface
 SERVER = None           # Server address
 SERVER_TIMER = None     
 TIMER = None
-LOGGER = None           
 
 HANDSHAKE_TIMEOUT = 10
 SERVER_TIMEOUT = 5              # Time in seconds before timeouting when not receiving packets from server
@@ -32,28 +29,30 @@ def CLOSE_CLIENT(close_stream_not_started=False):
     '''
     try:
         if (close_stream_not_started and not STREAM_STARTED.is_set()) or not REGISTER_ACK.is_set():
-            LOGGER.info("Couldn't start stream")
+            Logger.LOGGER.info("Couldn't start stream")
             SIGINT_HANDLER()
 
     except Exception as e:
-        LOGGER.error("An error occurred: %s", str(e))
+        Logger.LOGGER.error("An error occurred: %s", str(e))
 
 def SIGINT_HANDLER(signum=0, frame=''):
     '''
     Stops the client when sigint is received
     '''
     try:
-        LOGGER.info("Sigint received")
+        Logger.LOGGER.info("Sigint received")
    
+        if NETWORK != None:
+            NETWORK.stop()
+
         if SERVER_TIMER != None:
             SERVER_TIMER.stop()
             
         if TIMER != None:
             TIMER.stop()
 
-        if NETWORK != None:
-            NETWORK.stop()
-
     except Exception as e:
-        LOGGER.error("An error occurred: %s", str(e))
+        Logger.LOGGER.error("An error occurred: %s", str(e))
 
+    finally:
+        Logger.LOGGER.info("Exited")

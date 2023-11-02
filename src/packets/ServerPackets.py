@@ -2,6 +2,9 @@
 
 from src.server import GlobalServer
 from src.server import GlobalStream
+
+from src.utils import Logger
+
 from src.packets import TypesPackets
 
 def parse_new_client(data, source):
@@ -12,11 +15,11 @@ def parse_new_client(data, source):
         if len(data) != 0:
             return
 
-        GlobalServer.LOGGER.info("Parse new client from %s received", source)
+        Logger.LOGGER.info("Parse new client from %s received", source)
         GlobalServer.CLIENTS_QUEUE.put(source)
     
     except Exception as e:
-        GlobalServer.LOGGER.error("An error occurred: %s", str(e))
+        Logger.LOGGER.error("An error occurred: %s", str(e))
 
 def parse_port_ack(data, source):
     '''
@@ -30,15 +33,15 @@ def parse_port_ack(data, source):
         lider_ip, lider_port = GlobalStream.LIDER
 
         if source_ip != lider_ip:
-            GlobalStream.LOGGER.debug("Port ACK send by %s and not %s", source, GlobalStream.LIDER)
+            Logger.LOGGER.debug("Port ACK send by %s and not %s", source, GlobalStream.LIDER)
             return
 
-        GlobalStream.LOGGER.info("Port ack received")
+        Logger.LOGGER.info("Port ack received")
 
         GlobalStream.LIDER_TIMER.stop()
-        GlobalStream.LOGGER.debug("Port allocated retransmit timer stopped")
+        Logger.LOGGER.debug("Port allocated retransmit timer stopped")
 
         GlobalStream.NETWORK.unregister_callback(TypesPackets.PORT_ACK)
 
     except Exception as e:
-        GlobalStream.LOGGER.error("An error occurred: %s", str(e))
+        Logger.LOGGER.error("An error occurred: %s", str(e))

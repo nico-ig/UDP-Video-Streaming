@@ -45,19 +45,17 @@ class Socket:
     '''
     def __init__(self, host, port, recv_queue):
         try:
-            self.logger = Logger.get_logger('socket')
-
             self.host_name = host 
             self.recv_queue = recv_queue
 
             self.host_ip, self.host_port, self.local_socket = creates_socket(host, int(port))
 
             self.stop_event = threading.Event()
-            self.receive_thread = Utils.start_thread(self.receive_packets)
-            self.logger.debug("Binded to address %s", host)
+            self.receive_thread = Utils.start_thread(self.receive_packets, True)
+            Logger.LOGGER.debug("Binded to address %s", host)
 
         except Exception as e:
-            self.logger.error("An error occurred: %s", str(e))
+            Logger.LOGGER.error("An error occurred: %s", str(e))
 
     def receive_packets(self):
         '''
@@ -72,12 +70,12 @@ class Socket:
 
                 self.recv_queue.put((packet_type, packet_payload, source))
 
-                self.logger.debug('Packet received: source: %s, type: %d, payload: %s', source, packet_type, packet_payload)
+                Logger.LOGGER.debug('Packet received: source: %s, type: %d, payload: %s', source, packet_type, packet_payload)
             except BlockingIOError:
                 pass
 
             except Exception as e:
-                self.logger.error("An error occurred: %s", str(e))
+                Logger.LOGGER.error("An error occurred: %s", str(e))
 
 
     def send(self, destination, packet):
@@ -91,9 +89,10 @@ class Socket:
             destination_ip = Utils.resolve_name(destination_host)
 
             self.local_socket.sendto(packet, (destination_ip, destination_port))
-            self.logger.debug('Packet send: destination: %s, packet: %s', destination, packet)
+            Logger.LOGGER.debug('Packet send: destination: %s, packet: %s', destination, packet)
+            
         except Exception as e:
-            self.logger.error("An error occurred: %s", str(e))
+            Logger.LOGGER.error("An error occurred: %s", str(e))
 
     def get_address(self):
         '''
@@ -114,4 +113,4 @@ class Socket:
             self.receive_thread.join()
 
         except Exception as e:
-            self.logger.error("An error occurred: %s", str(e))
+            Logger.LOGGER.error("An error occurred: %s", str(e))

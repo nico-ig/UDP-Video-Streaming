@@ -2,7 +2,7 @@
 Creates and manages the logger.
 
 Example: \\
-logger = Logger.get_logger('simpleExample') \\
+logger = Logger.start_logger('simpleExample') \\
 logger.debug('debug message') \\
 logger.info('info message') \\
 logger.warning('warn message') \\
@@ -15,17 +15,9 @@ import logging
 import logging.config
 from datetime import datetime
 
+LOGGER = None
 
-def get_logger(name):
-    '''
-    Gets a logger by name
-    '''
-    try:
-        return logging.getLogger(name)
-    except:
-        logging.error('Failed to get logger')
-
-def start_logger():
+def start_logger(name):
     '''
     Starts the logger, it should be called only once per project
     '''
@@ -35,10 +27,23 @@ def start_logger():
 
             current_timestamp = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
 
-            new_name = config['handlers']['file_handler']['filename'].replace('<timestamp>', current_timestamp)
-            config['handlers']['file_handler']['filename'] = new_name
+            file_handler = name + '_file_handler'
+
+            config['handlers'] = {
+                'console': config['handlers']['console'],
+                file_handler: config['handlers'][file_handler]
+            }
+            
+            config['loggers'] = {name: config['loggers'][name]}
+
+            new_name = config['handlers'][file_handler]['filename'].replace('<timestamp>', current_timestamp)
+            config['handlers'][file_handler]['filename'] = new_name
 
             logging.config.dictConfig(config)
+
+        global LOGGER
+
+        LOGGER = logging.getLogger(name)
 
     except Exception as e:
         print(f"Error loading the YAML configuration: {e}")

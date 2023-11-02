@@ -2,8 +2,8 @@
 Deals with timeouts and time management callbacks
 '''
 
-import threading
 import time
+import threading
 
 from src.utils import Utils
 from src.utils import Logger
@@ -14,8 +14,6 @@ class Timer:
     '''
     def __init__(self, timeout, callback, args = ''):
         try:
-            self.logger = Logger.get_logger('timer')
-
             self.timeout = int(timeout * 1e9)
             self.callback = callback
             self.args = args
@@ -25,7 +23,7 @@ class Timer:
             self.timer_thread = Utils.start_thread(self.timer, True)
 
         except Exception as e:
-            self.logger.error("An error occurred: %s", str(e))
+            Logger.LOGGER.error("An error occurred: %s", str(e))
 
     def timer(self):
         '''

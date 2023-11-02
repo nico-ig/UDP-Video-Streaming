@@ -14,8 +14,6 @@ class Network:
     '''
     def __init__(self, host='', port=0):
         try:
-            self.logger = Logger.get_logger('network')
-
             self.stop_event = threading.Event()
             self.callbacks = {}
             self.packet_queue = queue.Queue()
@@ -27,7 +25,7 @@ class Network:
             self.handle_thread = Utils.start_thread(self.handle_packets)
     
         except Exception as e:
-            self.logger.error("An error occurred: %s", str(e))
+            Logger.LOGGER.error("An error occurred: %s", str(e))
 
     def handle_packets(self):
         '''
@@ -48,7 +46,7 @@ class Network:
         '''
         try:
             self.callbacks[packet_type] = function
-            self.logger.debug("Callback %s registered for type %d", function.__name__, packet_type)
+            Logger.LOGGER.debug("Callback %s registered for type %d", function.__name__, packet_type)
         except:
             pass
 
@@ -58,7 +56,7 @@ class Network:
         '''
         try:
             del self.callbacks[packet_type]
-            self.logger.debug("Callback unregistered for type %d", packet_type)
+            Logger.LOGGER.debug("Callback unregistered for type %d", packet_type)
         except:
             pass
 
@@ -93,4 +91,4 @@ class Network:
             self.handle_thread.join()
 
         except Exception as e:
-            self.logger.error("An error occurred: %s", str(e))
+            Logger.LOGGER.error("An error occurred: %s", str(e))

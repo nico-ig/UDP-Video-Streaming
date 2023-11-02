@@ -5,21 +5,24 @@ Opens a new stream in the server
 from src.packets import UtilsPackets
 from src.packets import TypesPackets
 from src.packets import ClientPackets
+
 from src.client import GlobalClient
+
 from src.utils import Timer
+from src.utils import Logger
 
 def open_stream_in_server():
     '''
     Open a new stream in the server
     '''
     try:
-        GlobalClient.LOGGER.debug("Oppening a new stream")
+        Logger.LOGGER.debug("Oppening a new stream")
 
         send_port_request()
         wait_port_allocated()
 
     except Exception as e:
-        GlobalClient.LOGGER.error("An error occurred: %s", str(e))
+        Logger.LOGGER.error("An error occurred: %s", str(e))
 
 def send_port_request():
     '''
@@ -27,18 +30,18 @@ def send_port_request():
     '''
     try:
         if GlobalClient.PORT_ALLOCATED.is_set():
-            GlobalClient.LOGGER.debug("Port request retransmit timer stopped")
+            Logger.LOGGER.debug("Port request retransmit timer stopped")
             return
         
-        GlobalClient.LOGGER.info("Sending new port request")
+        Logger.LOGGER.info("Sending new port request")
         packet = UtilsPackets.mount_byte_packet(TypesPackets.NEW_PORT_REQUEST)
         GlobalClient.NETWORK.send(GlobalClient.SERVER, packet)
 
         Timer.Timer(GlobalClient.RETRANSMIT_TIMEOUT, send_port_request)
-        GlobalClient.LOGGER.debug("Port request retransmit timer initiated")
+        Logger.LOGGER.debug("Port request retransmit timer initiated")
 
     except Exception as e:
-        GlobalClient.LOGGER.error("An error occurred: %s", str(e))
+        Logger.LOGGER.error("An error occurred: %s", str(e))
 
 def wait_port_allocated():
     '''
@@ -50,14 +53,14 @@ def wait_port_allocated():
         GlobalClient.NETWORK.register_callback(
             TypesPackets.PORT_ALLOCATED, ClientPackets.parse_port_allocated)
 
-        GlobalClient.LOGGER.debug("Waiting port allocated")
+        Logger.LOGGER.debug("Waiting port allocated")
         GlobalClient.PORT_ALLOCATED.wait()
 
-        GlobalClient.LOGGER.info("Port allocated received")
+        Logger.LOGGER.info("Port allocated received")
 
-        GlobalClient.LOGGER.info("Sending port ack")
+        Logger.LOGGER.info("Sending port ack")
         packet = UtilsPackets.mount_byte_packet(TypesPackets.PORT_ACK)
         GlobalClient.NETWORK.send(GlobalClient.SERVER, packet)
 
     except Exception as e:
-        GlobalClient.LOGGER.error("An error occurred: %s", str(e))
+        Logger.LOGGER.error("An error occurred: %s", str(e))
