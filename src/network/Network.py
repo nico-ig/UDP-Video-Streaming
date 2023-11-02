@@ -33,6 +33,7 @@ class Network:
         '''
         try:
             while not self.stop_event.is_set():
+
                 packet_type, packet_data, source = self.packet_queue.get()
 
                 if packet_type in self.callbacks:
@@ -65,6 +66,9 @@ class Network:
         Sends a packet to a destination
         '''
         try:
+            if self.stop_event.is_set():
+                return
+
             self.socket.send(destination, packet)
         except:
             pass
@@ -84,11 +88,11 @@ class Network:
         Stops the network interface
         '''
         try:
-            self.socket.stop()
             self.stop_event.set()
-            self.packet_queue.put((-1, 0, 0))
             self.packet_received.set()
+            self.packet_queue.put((-1, 0, 0))
             self.handle_thread.join()
+            self.socket.stop()
 
         except Exception as e:
             Logger.LOGGER.error("An error occurred: %s", str(e))

@@ -49,7 +49,9 @@ def send_port_allocated():
     Send port allocated to lider client
     '''
     try:
-        if GlobalStream.START_EVENT.is_set():
+        if GlobalStream.PORT_ACK_RECEIVED.is_set() or \
+           GlobalStream.START_EVENT.is_set() or \
+           GlobalStream.STOP_EVENT.is_set():
             return
 
         Logger.LOGGER.info("Sending port allocated")
@@ -74,12 +76,15 @@ def start_registration():
         Logger.LOGGER.info("Waiting for clients to register")
 
         GlobalStream.START_EVENT.wait()
+        if GlobalStream.STOP_EVENT.is_set():
+            return
 
         GlobalStream.NETWORK.unregister_callback(TypesPackets.REGISTER)
 
-        if len(GlobalStream.CLIENTS) < 1:
-            Logger.LOGGER.debug("No clients registered")
+        if not GlobalStream.CLIENTS:
+            Logger.LOGGER.info("No clients registered")
             sigint_handler()
+            return
             
         Logger.LOGGER.info("Should start streaming, registered clients are: %s", GlobalStream.CLIENTS)
 
@@ -106,6 +111,9 @@ def sigint_handler(signum = 0, fram = ''):
     try:
         Logger.LOGGER.info("Sigint received")
 
+        GlobalStream.STOP_EVENT.set()
+        GlobalStream.START_EVENT.set()
+
         if GlobalStream.NETWORK != None:
             GlobalStream.NETWORK.stop()
 
@@ -116,8 +124,7 @@ def sigint_handler(signum = 0, fram = ''):
         Logger.LOGGER.error("An error occurred: %s", str(e))
 
     finally:
-        Logger.LOGGER.info("Exited")
-        exit()
+        Logger.LOGGER.info("Exitting")
 
 def send_packet_to_client(clients, packet):
     '''

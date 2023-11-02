@@ -69,7 +69,6 @@ def sigint_handler(signum=0, frame=''):
         Logger.LOGGER.error("An error occurred: %s", str(e))
 
     finally:
-        Logger.LOGGER.info("Exited")
-        exit()
+        Logger.LOGGER.info("Exitting")
 
 main()

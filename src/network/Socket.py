@@ -51,7 +51,7 @@ class Socket:
             self.host_ip, self.host_port, self.local_socket = creates_socket(host, int(port))
 
             self.stop_event = threading.Event()
-            self.receive_thread = Utils.start_thread(self.receive_packets, True)
+            self.receive_thread = Utils.start_thread(self.receive_packets)
             Logger.LOGGER.debug("Binded to address %s", host)
 
         except Exception as e:
@@ -93,7 +93,7 @@ class Socket:
             destination_ip = Utils.resolve_name(destination_host)
 
             self.local_socket.sendto(packet, (destination_ip, destination_port))
-            Logger.LOGGER.debug('Packet send: destination: %s, packet: %s', destination, packet)
+            Logger.LOGGER.debug('Packet send: destination: %s', destination)
             
         except Exception as e:
             Logger.LOGGER.error("An error occurred: %s", str(e))
@@ -113,8 +113,8 @@ class Socket:
         '''
         try:
             self.stop_event.set()
-            self.local_socket.close()
             self.receive_thread.join()
+            self.local_socket.close()
 
         except Exception as e:
             Logger.LOGGER.error("An error occurred: %s", str(e))
