@@ -1,11 +1,16 @@
-# Deals with the parsing of the packets (incoming and outgoing) for the server
+'''
+Deals with the parsing of the packets (incoming and outgoing) for the server
+'''
+
+import struct
 
 from src.server import GlobalServer
 from src.server import GlobalStream
 
-from src.utils import Logger
-
 from src.packets import TypesPackets
+from src.packets import UtilsPackets
+
+from src.utils import Logger
 
 def parse_new_client(data, source):
     '''
@@ -42,6 +47,28 @@ def parse_port_ack(data, source):
         Logger.LOGGER.debug("Port allocated retransmit timer stopped")
 
         GlobalStream.NETWORK.unregister_callback(TypesPackets.PORT_ACK)
+
+    except Exception as e:
+        Logger.LOGGER.error("An error occurred: %s", str(e))
+
+
+def parse_new_registration(data, source):
+    '''
+    Parse the packet for a new register from clients
+    '''
+    try:
+        if len(data) != 0:
+            return
+
+        GlobalStream.CLIENTS.add(source)
+        Logger.LOGGER.info("New client %s registered", source)
+
+        packet = UtilsPackets.mount_byte_packet(TypesPackets.REGISTER_ACK)
+        packet += struct.pack('Q', GlobalStream.TIMER.remaining_time())
+        packet += struct.pack('Q', GlobalStream.INTERVAL)
+
+        Logger.LOGGER.info("Sending register ack to client %s", source)
+        GlobalStream.NETWORK.send(source, packet) 
 
     except Exception as e:
         Logger.LOGGER.error("An error occurred: %s", str(e))

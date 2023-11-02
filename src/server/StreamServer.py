@@ -5,7 +5,6 @@ This should run in a separeted process from the main server
 '''
 
 import signal
-import struct
 
 from src.server import GlobalStream
 
@@ -74,7 +73,7 @@ def start_registration():
         GlobalStream.TIMER = Timer.Timer(GlobalStream.REGISTRATION_DURATION, registration_finished)
         Logger.LOGGER.debug("Registration timer started")
 
-        GlobalStream.NETWORK.register_callback(TypesPackets.REGISTER, new_client)
+        GlobalStream.NETWORK.register_callback(TypesPackets.REGISTER, ServerPackets.parse_new_registration)
         Logger.LOGGER.info("Waiting for clients to register")
 
         while not GlobalStream.START_EVENT.is_set():
@@ -85,27 +84,6 @@ def start_registration():
             sigint_handler()
             
         Logger.LOGGER.info("Should start streaming, registered clients are: %s", GlobalStream.CLIENTS)
-
-    except Exception as e:
-        Logger.LOGGER.error("An error occurred: %s", str(e))
-
-def new_client(data, source):
-    '''
-    Deals with new clients wishing to join the stream
-    '''
-    try:
-        if len(data) != 0:
-            return
-
-        GlobalStream.CLIENTS.add(source)
-        Logger.LOGGER.info("New client %s registered", source)
-
-        packet = UtilsPackets.mount_byte_packet(TypesPackets.REGISTER_ACK)
-        packet += struct.pack('Q', GlobalStream.TIMER.remaining_time())
-        packet += struct.pack('Q', GlobalStream.INTERVAL)
-
-        Logger.LOGGER.info("Sending register ack to client %s", source)
-        GlobalStream.NETWORK.send(source, packet) 
 
     except Exception as e:
         Logger.LOGGER.error("An error occurred: %s", str(e))

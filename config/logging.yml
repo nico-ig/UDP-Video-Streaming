@@ -3,51 +3,48 @@ formatters:
   simple:
     format: "[PID:%(process)d] -- [%(levelname)s] -- [%(asctime)s.%(msecs)03d] -- [%(message)s]"
     datefmt: "%d-%m-%Y %H:%M:%S"
+
   debug:
     format: "[PID:%(process)d] -- [%(levelname)s] -- [%(asctime)s.%(msecs)03d] -- [%(filename)s:%(funcName)s:%(lineno)d] -- [%(message)s]"
     datefmt: "%d-%m-%Y %H:%M:%S"
+
 handlers:
   console:
     class: logging.StreamHandler
     level: DEBUG
-    formatter: simple
+    formatter: debug
     stream: ext://sys.stdout
-  file_handler:
+
+  client_file_handler:
     class: logging.FileHandler
     level: DEBUG
     formatter: simple
-    filename: logs/<timestamp>.log
+    filename: logs/client/<timestamp>.log
+
+  server_file_handler:
+    class: logging.FileHandler
+    level: DEBUG
+    formatter: simple
+    filename: logs/server/<timestamp>.log
+
+  stream_server_file_handler:
+    class: logging.FileHandler
+    level: DEBUG
+    formatter: simple
+    filename: logs/server/stream/<timestamp>.log
+
 loggers:
-  socket:
-    level: INFO
-    handlers: [console, file_handler]
-    propagate: no
-
-  network:
-    level: INFO
-    handlers: [console, file_handler]
-    propagate: no
-
-  timer:
-    level: INFO
-    handlers: [console, file_handler]
-    propagate: no
-
   client:
-    level: INFO
-    handlers: [console, file_handler]
+    level: DEBUG
+    handlers: [console, client_file_handler]
     propagate: no
 
   server:
-    level: INFO
-    handlers: [console, file_handler]
+    level: DEBUG
+    handlers: [console, server_file_handler]
     propagate: no
 
-  stream-server:
-    level: INFO
-    handlers: [console, file_handler]
+  stream_server:
+    level: DEBUG
+    handlers: [console, stream_server_file_handler]
     propagate: no
-
-root:
-  level: INFO
-  handlers: [console, file_handler]
