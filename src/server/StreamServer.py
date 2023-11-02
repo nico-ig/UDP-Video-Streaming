@@ -48,15 +48,14 @@ def send_port_allocated():
     Send port allocated to lider client
     '''
     try:
+        if GlobalStream.START_EVENT.is_set():
+            return
+
         Logger.LOGGER.info("Sending port allocated")
         packet = UtilsPackets.mount_byte_packet(TypesPackets.PORT_ALLOCATED)
         GlobalStream.NETWORK.send(GlobalStream.LIDER, packet)
 
-
-        if GlobalStream.TIMER is not None:
-            GlobalStream.TIMER.stop()
-
-        GlobalStream.TIMER = Timer.Timer(GlobalStream.PORT_ALLOCATED_TIMEOUT, send_port_allocated)
+        Timer.Timer(GlobalStream.PORT_ALLOCATED_TIMEOUT, send_port_allocated)
         Logger.LOGGER.debug("Port allocated retransmit timer initiated")
 
         GlobalStream.NETWORK.register_callback(TypesPackets.PORT_ACK, ServerPackets.parse_port_ack)
@@ -69,15 +68,15 @@ def start_registration():
     Starts the registration
     '''
     try:
-        GlobalStream.TIMER.stop()
-        GlobalStream.TIMER = Timer.Timer(GlobalStream.REGISTRATION_DURATION, registration_finished)
+        Timer.Timer(GlobalStream.REGISTRATION_DURATION, registration_finished)
         Logger.LOGGER.debug("Registration timer started")
 
         GlobalStream.NETWORK.register_callback(TypesPackets.REGISTER, ServerPackets.parse_new_registration)
         Logger.LOGGER.info("Waiting for clients to register")
 
-        while not GlobalStream.START_EVENT.is_set():
-            pass
+        GlobalStream.START_EVENT.wait()
+
+        GlobalStream.NETWORK.unregister_callback(TypesPackets.REGISTER)
 
         if len(GlobalStream.CLIENTS) < 1:
             Logger.LOGGER.debug("No clients registered")
