@@ -42,6 +42,7 @@ def parse_port_ack(data, source):
             return
 
         Logger.LOGGER.info("Port ack received")
+        GlobalStream.PORT_ACK_RECEIVED.set()
 
         GlobalStream.LIDER_TIMER.stop()
         Logger.LOGGER.debug("Port allocated retransmit timer stopped")
