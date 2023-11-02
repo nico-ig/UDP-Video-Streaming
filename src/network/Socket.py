@@ -56,6 +56,7 @@ class Socket:
 
         except Exception as e:
             Logger.LOGGER.error("An error occurred: %s", str(e))
+            exit()
 
     def receive_packets(self):
         '''
@@ -70,7 +71,7 @@ class Socket:
 
                 self.recv_queue.put((packet_type, packet_payload, source))
 
-                Logger.LOGGER.debug('Packet received: source: %s, type: %d, payload: %s', source, packet_type, packet_payload)
+                Logger.LOGGER.debug('Packet received: source: %s, type: %d', source, packet_type)
             except BlockingIOError:
                 pass
 
@@ -83,6 +84,9 @@ class Socket:
         Sends though the socket the packet to the destination
         '''
         try:
+            if self.stop_event.is_set():
+                return
+            
             destination_host, destination_port = destination
 
             destination_port = int(destination_port)
