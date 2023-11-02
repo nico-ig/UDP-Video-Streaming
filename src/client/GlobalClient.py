@@ -20,6 +20,7 @@ REGISTER_DURATION = 10      # The durantion of the registration phase received b
 
 STREAM_TIMEOUT =  10      # The start value in the amount of intervals between stream packets before timeouting
 
+STOP_EVENT= threading.Event()
 PORT_ALLOCATED = threading.Event()
 REGISTER_ACK = threading.Event()
 STREAM_STARTED = threading.Event()
@@ -44,6 +45,11 @@ def SIGINT_HANDLER(signum=0, frame=''):
     '''
     try:
         Logger.LOGGER.info("Sigint received")
+
+        STOP_EVENT.set()
+        PORT_ALLOCATED.set()
+        REGISTER_ACK.set()
+        STREAM_STARTED.set()
    
         if NETWORK != None:
             NETWORK.stop()
@@ -58,4 +64,4 @@ def SIGINT_HANDLER(signum=0, frame=''):
         Logger.LOGGER.error("An error occurred: %s", str(e))
 
     finally:
-        Logger.LOGGER.info("Exited")
+        Logger.LOGGER.info("Exitting")

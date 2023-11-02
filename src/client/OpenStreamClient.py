@@ -29,8 +29,7 @@ def send_port_request():
     Send the request for a stream port at the server
     '''
     try:
-        if GlobalClient.PORT_ALLOCATED.is_set():
-            Logger.LOGGER.debug("Port request retransmit timer stopped")
+        if GlobalClient.PORT_ALLOCATED.is_set() or GlobalClient.STOP_EVENT.is_set():
             return
         
         Logger.LOGGER.info("Sending new port request")
@@ -55,6 +54,9 @@ def wait_port_allocated():
 
         Logger.LOGGER.debug("Waiting port allocated")
         GlobalClient.PORT_ALLOCATED.wait()
+
+        if GlobalClient.STOP_EVENT.is_set():
+            return
 
         Logger.LOGGER.info("Port allocated received")
 

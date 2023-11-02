@@ -29,8 +29,7 @@ def send_registration_packet():
     Send to server a request to register at a stream
     ''' 
     try:
-        if GlobalClient.REGISTER_ACK.is_set():
-            Logger.LOGGER.debug("Registration retransmit timer stopped")
+        if GlobalClient.REGISTER_ACK.is_set() or GlobalClient.STOP_EVENT.is_set():
             return
             
         packet = UtilsPackets.mount_byte_packet(TypesPackets.REGISTER)
@@ -51,6 +50,9 @@ def prepare_to_listen_to_stream():
         GlobalClient.NETWORK.register_callback(TypesPackets.REGISTER_ACK, ClientPackets.parse_register_ack)
 
         GlobalClient.REGISTER_ACK.wait()
+
+        if GlobalClient.STOP_EVENT.is_set():
+            return
     
         Logger.LOGGER.info("Register ack received")
         GlobalClient.NETWORK.unregister_callback(TypesPackets.REGISTER_ACK)
