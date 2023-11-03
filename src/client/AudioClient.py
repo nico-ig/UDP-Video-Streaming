@@ -7,19 +7,26 @@ import struct
 import sounddevice as sd
 
 from src.client import GlobalClient as gc
-from src.utils import StreamHeap as sh
+from src.utils import StreamHeap
 from src.utils import Packets
+from src.utils import Utils
 
 file_path = "musics"
 file_blocksize = 2048   # Power of two that fits in MTU = 1500
-# h = []
+h = []
 event = threading.Event()
 
 def callback(outdata, frames, time, status):
+    data = h[0][1]
+    heapq.heappop(h)
+    print(data)
+    if len(data) < len(outdata):
+        outdata[:len(data)] = data
+        outdata[len(data):] = b'\x00' * (len(outdata) - len(data))
     try:
-        data = gc.STREAM[0][1]
-        # print(f"Playing segment {gc.STREAM[0][0][0]}")
-        sh.remove_from_stream()
+        data = h[0][1]
+        print(f"Playing segment {h[0][0]}")
+        heapq.heappop(h)
         if len(data) < len(outdata):
             outdata[:len(data)] = data
             outdata[len(data):] = b'\x00' * (len(outdata) - len(data))
@@ -28,26 +35,45 @@ def callback(outdata, frames, time, status):
             outdata[:] = data
     except:
         raise sd.CallbackStop
+    else:
+        outdata[:] = data
     
+player = StreamHeap.stream_player()
+ 
 def reproduce_stream(): # Call this function after the "STREAM_PACKET" is received
     try:
-        packets_array = []
-        musics = []
-        musics = Packets.create_musics_packets(file_blocksize, file_path)
-        for music in musics:
-            file_samplerate = struct.unpack('Q', music[0][8:17])[0]
-            file_channels = struct.unpack('Q', music[0][17:])[0]
-            packets_array = music[1]
-        for packet in packets_array:
-            key = struct.unpack('Q', packet[:8])[0]
-            item = packet[8:]
-            gc.STREAM.add_to_stream(key, item)
+        packet = []
+        packets = Packets.create_musics_packets(file_blocksize, file_path)
+        for packet in packets:
+            config = packet[0]
+            audio_streams = packet[1]
+
+            packet_type = config[0]
+            print(f"Type: {packet_type}")
+
+            config = config[1:]
+
+            name, config = Utils.deserialize_str(config)
+            print(f"Name: {name}")
+
+            sample_rate = struct.unpack('Q', config[:8])[0]
+            print(f"Sample rate: {sample_rate}")
+            config = config[8:]
+
+            channels = struct.unpack('Q', config)[0]
+            print(f"Channles: {channels}")
+
+            for stream in audio_streams:
+                key = struct.unpack('Q', stream[:8])[0]
+                stream = stream[8:]
+                print(stream)
+                heapq.heappush(h, (key, stream))
             
 
             
         stream = sd.RawOutputStream(
-            samplerate=file_samplerate, blocksize=file_blocksize // 8,
-            device=None, channels=file_channels, dtype='float32',
+            samplerate=sample_rate, blocksize=file_blocksize // 8,
+            device=None, channels=channels, dtype='float32',
             callback=callback, finished_callback=event.set)
         with stream:
             event.wait()  # Wait until playback is finished

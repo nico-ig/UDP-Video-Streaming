@@ -14,6 +14,7 @@ def callback(outdata, frames, time, status):
     try:
         data = h[0][1]
         print(f"Playing segment {h[0][0][0]}")
+        print(data)
         heapq.heappop(h)
         if len(data) < len(outdata):
             outdata[:len(data)] = data

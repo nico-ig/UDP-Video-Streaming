@@ -30,7 +30,7 @@ def creates_socket(host, port):
     Binds a socket to the desired port
     '''
     try:
-        local_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        local_socket = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
         host_ip = socket.gethostbyname(host)
         local_socket.bind((host_ip, port))
         host_ip, host_port = local_socket.getsockname()
