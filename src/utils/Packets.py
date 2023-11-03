@@ -24,8 +24,10 @@ def mount_music_packets(blocksize, file_path):
         try:
             packets_array = []
             filename = file_path.split('/')[-1]
-            music_config_packet = bytes([6]) + Utils.serialize_str(filename) + struct.pack('Q', file.samplerate) + struct.pack('Q', file.channels)
-            bit_depth = get_bit_depth(file)
+            # music_config_packet = bytes([6]) + Utils.serialize_str(filename) + struct.pack('Q', file.samplerate) + struct.pack('Q', file.channels)
+            # bit_depth = get_bit_depth(file)
+            music_config_packet = bytes([6]) + struct.pack('Q', file.samplerate) + struct.pack('Q', file.channels)
+            bit_depth = get_bit_depth(file)            
             full_blocks = (os.path.getsize(file_path) * bit_depth) // blocksize
             for i in range(full_blocks + 1):
                 fragment = bytearray(blocksize)

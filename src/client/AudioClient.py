@@ -32,13 +32,19 @@ def callback(outdata, frames, time, status):
 def reproduce_stream(): # Call this function after the "STREAM_PACKET" is received
     try:
         packets_array = []
-        file_samplerate, file_channels = Packets.create_musics_packets(file_blocksize, file_path)
-        for i in range(0, len(packets_array), 1):
-            packet = packets_array[i]
-            seq = struct.unpack('Q', packet[:8])
-            data = packet[8:]
-            sh.add_to_stream(seq, data)
+        musics = []
+        musics = Packets.create_musics_packets(file_blocksize, file_path)
+        for music in musics:
+            file_samplerate = struct.unpack('Q', music[0][8:17])[0]
+            file_channels = struct.unpack('Q', music[0][17:])[0]
+            packets_array = music[1]
+        for packet in packets_array:
+            key = struct.unpack('Q', packet[:8])[0]
+            item = packet[8:]
+            gc.STREAM.add_to_stream(key, item)
+            
 
+            
         stream = sd.RawOutputStream(
             samplerate=file_samplerate, blocksize=file_blocksize // 8,
             device=None, channels=file_channels, dtype='float32',
