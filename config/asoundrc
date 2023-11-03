@@ -1,0 +1,5 @@
+pcm.!default {
+    type file
+    slave.pcm <device>
+    file "/dev/null"
+}
