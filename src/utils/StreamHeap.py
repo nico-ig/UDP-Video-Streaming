@@ -21,10 +21,11 @@ class stream_player:
 
     # Removes a segment from the stream and returns it to be played
     def remove_from_stream(self):
+        key = self.stream_heap[0][0]
         segment = self.stream_heap[0][1]
         self.lastPlayed = self.stream_heap[0][0]
         heapq.heappop(self.stream_heap)
-        return segment
+        return (key, segment)
 
     # Plays a single segment of the stream
     def play_segment(self, segment):

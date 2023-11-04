@@ -25,7 +25,7 @@ PORT_ALLOCATED = threading.Event()
 REGISTER_ACK = threading.Event()
 STREAM_STARTED = threading.Event()
 
-STREAM = []
+STREAM = sh.stream_player()
 
 def CLOSE_CLIENT(close_stream_not_started=False):
     '''

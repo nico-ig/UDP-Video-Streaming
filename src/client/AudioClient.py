@@ -15,14 +15,15 @@ from src.utils import Utils
 
 file_path = "musics"
 file_blocksize = 1024
-h = []
+# h = []
 event = threading.Event()
 heap_lock = threading.Lock()
 
 def callback(outdata, frames, time, status):
     try:
         with heap_lock:
-            seq, stream = heapq.heappop(h)
+            # seq, stream = heapq.heappop(h)
+            seq, stream = gc.STREAM.remove_from_stream()
             
         if len(stream) < len(outdata):
             outdata[:len(stream)] = stream
@@ -101,7 +102,8 @@ def reproduce_stream(): # Call this function after the "STREAM_PACKET" is receiv
                 stream = stream[8:]
                 # Não sei e precisa, mas é pra evitar adicionar um pacote com a callback fazendo o pop
                 with heap_lock:
-                    heapq.heappush(h, (seq, stream))
+                    # heapq.heappush(h, (seq, stream))
+                    gc.STREAM.add_to_stream(seq, stream)
 
             with player:
                 event.wait()  # Wait until playback is finished
