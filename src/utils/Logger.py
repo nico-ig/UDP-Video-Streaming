@@ -15,6 +15,8 @@ import logging
 import logging.config
 from datetime import datetime
 
+from src.utils import Utils
+
 LOGGER = None
 
 def start_logger(name):
@@ -25,7 +27,7 @@ def start_logger(name):
         with open('config/logging.yml', 'r') as config_file:
             config = yaml.safe_load(config_file)
 
-            current_timestamp = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+            current_timestamp = Utils.timestamp()
 
             file_handler = name + '_file_handler'
 
