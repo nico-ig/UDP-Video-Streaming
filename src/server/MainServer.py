@@ -27,6 +27,7 @@ def main():
             GlobalStream.INTERVAL = sys.argv[3]
 
         Logger.start_logger('server')
+        Logger.set_logger('server')
         Logger.LOGGER.info("Creating server")
 
         signal.signal(signal.SIGINT, sigint_handler)

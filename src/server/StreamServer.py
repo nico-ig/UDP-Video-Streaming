@@ -24,6 +24,7 @@ def new_stream(server, lider):
     try:
 
         Logger.start_logger('stream_server')
+        Logger.set_logger('stream_server')
         Logger.LOGGER.info("Creating new stream")
 
         signal.signal(signal.SIGINT, sigint_handler)

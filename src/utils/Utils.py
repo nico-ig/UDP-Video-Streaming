@@ -3,6 +3,7 @@
 '''
 
 import os
+import glob
 import struct
 import socket
 import threading
@@ -60,46 +61,19 @@ def timestamp():
     '''
     return datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
 
-def capture_alsa():
+def delete_older_files(path, keep=2):
     '''
-    Change the alsa config
+    Delete older files, value in keep is how many most recent
+    files shouldn't be deleted
     '''
-    pass
-    # try:
-    #     asoundrc_path = os.path.expanduser('~') + '/.asoundrc'
+    files = glob.glob(os.path.join(path, "*.log"))
+    files.sort(key=lambda file: os.path.getctime(file))
 
-    #     if os.path.isfile(asoundrc_path):
-    #         bkp_path = asoundrc_path + '_bkp'
-    #         os.system(f'cp {asoundrc_path} {bkp_path}')
+    if keep > 0:
+        files = files[:-keep]
 
-    #     os.system(f'cat ./config/asoundrc >> {asoundrc_path}')
-
-    #     with open(asoundrc_path, "r") as config_file:
-    #         log_path = os.getcwd() + '/logs/alsa/' + timestamp()
-    #         os.system(f'touch {log_path}')
-    #         alsa_config = config_file.read()
-    #         alsa_config = alsa_config.replace("<log_path>", log_path)
-
-    #     with open(asoundrc_path, "w") as config_file:
-    #         config_file.write(alsa_config)
-
-    # except Exception as e:
-    #     print("An error occurred: %s", str(e))
-
-def restore_alsa():
-    '''
-    Restore the alsa config
-    '''
-    pass
-    # try:
-    #     asoundrc_path = os.path.expanduser('~') + '/.asoundrc'
-    #     bkp_path = asoundrc_path + '_bkp'
-
-    #     if os.path.isfile(bkp_path):
-    #         os.system(f'cp {bkp_path} {asoundrc_path}')
-    #         os.remove(bkp_path)
-    #     else:
-    #         os.remove(asoundrc_path)
-
-    # except Exception as e:
-    #     print("An error occurred: %s", str(e))
+    for file in files:
+        try:
+            os.remove(file)
+        except:
+            continue

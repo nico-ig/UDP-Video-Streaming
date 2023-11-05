@@ -7,9 +7,10 @@ import time
 import struct
 import sounddevice as sd
 
-from src.client import GlobalClient as gc
-from src.utils import Packets
 from src.utils import Utils
+from src.utils import Logger
+from src.utils import AlsaUtils
+from src.utils import Packets
 from src.utils import StreamHeap as sh
 
 file_path = "musics"
@@ -23,7 +24,6 @@ def callback(outdata, frames, time, status):
     '''
     try:
         seq, stream = buffer.remove_from_buffer()
-        print(f'Playing seq {seq}')
         
         if len(stream) < len(outdata):
             outdata[:len(stream)] = stream
@@ -37,7 +37,12 @@ def callback(outdata, frames, time, status):
     
 def reproduce_stream(): # Call this function after the "STREAM_PACKET" is received
     try:
-        Utils.capture_alsa()
+        # ----------- REMOVE THIS AFTER INTEGRATION ----------------
+        alsa_logger = Logger.start_logger('alsa')
+        # ----------------------------------------------------------
+
+        alsa_logger = Logger.get_logger('alsa')
+        AlsaUtils.set_error_handler(alsa_logger)
 
         packet = []
         packets = Packets.create_musics_packets(file_blocksize, file_path)
@@ -87,8 +92,4 @@ def reproduce_stream(): # Call this function after the "STREAM_PACKET" is receiv
     except Exception as e:
         print("An error occurred: %s", str(e))
 
-    finally:
-        Utils.restore_alsa()
-        
-        
 reproduce_stream()

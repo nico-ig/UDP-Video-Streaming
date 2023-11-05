@@ -10,16 +10,16 @@ logger.error('error message') \\
 logger.critical('critical message')
 '''
 
+import os
 import yaml
 import logging
 import logging.config
-from datetime import datetime
 
 from src.utils import Utils
 
 LOGGER = None
 
-def start_logger(name):
+def start_logger(*names):
     '''
     Starts the logger, it should be called only once per project
     '''
@@ -29,23 +29,48 @@ def start_logger(name):
 
             current_timestamp = Utils.timestamp()
 
-            file_handler = name + '_file_handler'
+            custom_config = {'handlers': {}, 'loggers': {}}
+            for name in names:
 
-            config['handlers'] = {
-                'console': config['handlers']['console'],
-                file_handler: config['handlers'][file_handler]
-            }
-            
-            config['loggers'] = {name: config['loggers'][name]}
+                # Get the name of file_handler and the object
+                handlers_for_name = {}
+                handlers_for_name['handlers'] = {}
+                file_handler = name + '_file_handler'
 
-            new_name = config['handlers'][file_handler]['filename'].replace('<timestamp>', current_timestamp)
-            config['handlers'][file_handler]['filename'] = new_name
+                # Creates the directories in file_handler_path
+                parts = config['handlers'][file_handler]['filename'].rsplit('/')
+                file_handler_path = '/'.join(parts[:-1])
+                os.system(f'mkdir -p {file_handler_path}')
 
+                Utils.delete_older_files(file_handler_path)
+
+                # Set the configs for the handler
+                for handler in config['loggers'][name]['handlers']:
+                    handlers_for_name['handlers'][handler] = config['handlers'][handler]
+                        
+                custom_config['handlers'] = {**custom_config['handlers'], **handlers_for_name['handlers']}
+                custom_config['loggers'][name] = config['loggers'][name]
+
+                # Get the name of log file
+                new_name = custom_config['handlers'][file_handler]['filename'].replace('<timestamp>', current_timestamp)
+                custom_config['handlers'][file_handler]['filename'] = new_name
+
+            # Set global config to configs for required loggers
+            config = {**config, **custom_config}
             logging.config.dictConfig(config)
-
-        global LOGGER
-
-        LOGGER = logging.getLogger(name)
 
     except Exception as e:
         print(f"Error loading the YAML configuration: {e}")
+
+def set_logger(name):
+    '''
+    Sets the global logger
+    '''
+    global LOGGER
+    LOGGER = logging.getLogger(name)
+    
+def get_logger(name):
+    '''
+    Gets a specific logger
+    '''
+    return logging.getLogger(name)

@@ -21,6 +21,7 @@ def main():
             exit()
 
         Logger.start_logger('client')
+        Logger.set_logger('client', 'alsa')
         Logger.LOGGER.info("Starting client")
 
         signal.signal(signal.SIGINT, GlobalClient.SIGINT_HANDLER)

@@ -12,8 +12,14 @@ handlers:
   console:
     class: logging.StreamHandler
     level: DEBUG
-    formatter: debug
+    formatter: simple
     stream: ext://sys.stdout
+
+  alsa_file_handler:
+    class: logging.FileHandler
+    level: DEBUG
+    formatter: simple
+    filename: logs/alsa/<timestamp>.log
 
   client_file_handler:
     class: logging.FileHandler
@@ -34,6 +40,11 @@ handlers:
     filename: logs/server/stream/<timestamp>.log
 
 loggers:
+  alsa:
+    level: DEBUG
+    handlers: [alsa_file_handler]
+    propagate: no
+
   client:
     level: DEBUG
     handlers: [console, client_file_handler]
