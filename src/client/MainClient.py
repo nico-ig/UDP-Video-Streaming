@@ -17,11 +17,11 @@ def main():
     '''
     try:
         if len(sys.argv) < 3:
-            print("Usage: python Client.py <Server Name> <Server Port> -j")
+            print("Usage: python Client.py <Server Name> <Server Port> -j -4(optional)")
             exit()
 
-        Logger.start_logger('client')
-        Logger.set_logger('client', 'alsa')
+        Logger.start_logger('client', 'alsa')
+        Logger.set_logger('client')
         Logger.LOGGER.info("Starting client")
 
         signal.signal(signal.SIGINT, GlobalClient.SIGINT_HANDLER)
@@ -30,7 +30,9 @@ def main():
         server_port = sys.argv[2]
         GlobalClient.SERVER = (server_name, server_port)
 
-        GlobalClient.NETWORK = Network.Network()
+        GlobalClient.IPV4 = True if sys.argv[-1] == "-4" else False
+
+        GlobalClient.NETWORK = Network.Network(GlobalClient.IPV4)
         Logger.LOGGER.debug("Network interface created")
 
         option = 'join' if len(

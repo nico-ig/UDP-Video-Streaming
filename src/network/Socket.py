@@ -2,8 +2,8 @@
 Deals directly with the socket management
 '''
 
-import threading
 import socket
+import threading
 
 from src.utils import Logger
 from src.utils import Utils
@@ -25,15 +25,19 @@ def parse_packet(packet):
         raise e
 
 
-def creates_socket(host, port):
+def creates_socket(host, port, ipv4):
     '''
     Binds a socket to the desired port
     '''
     try:
-        local_socket = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-        host_ip = socket.gethostbyname(host)
+        if ipv4 == True:
+            local_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        else:
+            local_socket = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+
+        host_ip = Utils.resolve_name(host, ipv4)
         local_socket.bind((host_ip, port))
-        host_ip, host_port = local_socket.getsockname()
+        host_ip, host_port = local_socket.getsockname()[:2]
         return host_ip, host_port, local_socket
             
     except Exception as e:
@@ -43,12 +47,12 @@ class Socket:
     '''
     Creates and manage a socket
     '''
-    def __init__(self, host, port, recv_queue):
+    def __init__(self, host, port, recv_queue, ipv4=False):
         try:
             self.host_name = host 
             self.recv_queue = recv_queue
 
-            self.host_ip, self.host_port, self.local_socket = creates_socket(host, int(port))
+            self.host_ip, self.host_port, self.local_socket = creates_socket(host, int(port), ipv4)
 
             self.stop_event = threading.Event()
             self.receive_thread = Utils.start_thread(self.receive_packets)
@@ -69,7 +73,7 @@ class Socket:
                 packet, source = self.local_socket.recvfrom(1024)
                 packet_type, packet_payload = parse_packet(packet)
 
-                self.recv_queue.put((packet_type, packet_payload, source))
+                self.recv_queue.put((packet_type, packet_payload, source[:2]))
 
                 Logger.LOGGER.debug('Packet received: source: %s, type: %d', source, packet_type)
             except BlockingIOError:
@@ -79,7 +83,7 @@ class Socket:
                 Logger.LOGGER.error("An error occurred: %s", str(e))
 
 
-    def send(self, destination, packet):
+    def send(self, destination, packet, ipv4=False):
         '''
         Sends though the socket the packet to the destination
         '''
@@ -90,7 +94,7 @@ class Socket:
             destination_host, destination_port = destination
 
             destination_port = int(destination_port)
-            destination_ip = Utils.resolve_name(destination_host)
+            destination_ip = Utils.resolve_name(destination_host, ipv4)
 
             self.local_socket.sendto(packet, (destination_ip, destination_port))
             Logger.LOGGER.debug('Packet send: destination: %s', destination)

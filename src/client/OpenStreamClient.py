@@ -34,7 +34,7 @@ def send_port_request():
         
         Logger.LOGGER.info("Sending new port request")
         packet = UtilsPackets.mount_byte_packet(TypesPackets.NEW_PORT_REQUEST)
-        GlobalClient.NETWORK.send(GlobalClient.SERVER, packet)
+        GlobalClient.NETWORK.send(GlobalClient.SERVER, packet, GlobalClient.IPV4)
 
         Timer.Timer(GlobalClient.RETRANSMIT_TIMEOUT, send_port_request)
         Logger.LOGGER.debug("Port request retransmit timer initiated")
@@ -62,7 +62,7 @@ def wait_port_allocated():
 
         Logger.LOGGER.info("Sending port ack")
         packet = UtilsPackets.mount_byte_packet(TypesPackets.PORT_ACK)
-        GlobalClient.NETWORK.send(GlobalClient.SERVER, packet)
+        GlobalClient.NETWORK.send(GlobalClient.SERVER, packet, GlobalClient.IPV4)
 
     except Exception as e:
         Logger.LOGGER.error("An error occurred: %s", str(e))

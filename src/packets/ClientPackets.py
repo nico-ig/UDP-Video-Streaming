@@ -46,7 +46,7 @@ def parse_port_allocated(payload, source):
         server_ip, server_port = GlobalClient.SERVER
         source_ip, source_port = source
 
-        if not Utils.is_same_ip(server_ip, source_ip):
+        if not Utils.is_same_ip(server_ip, source_ip, GlobalClient.IPV4):
             return
         
         Logger.LOGGER.debug("Received port allocated from %s", source)

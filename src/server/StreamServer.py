@@ -17,7 +17,7 @@ from src.packets import ServerPackets
 from src.utils import Timer
 from src.utils import Logger
 
-def new_stream(server, lider):
+def new_stream(server, lider, ipv4):
     '''
     Starts a new stream
     '''
@@ -30,8 +30,9 @@ def new_stream(server, lider):
         signal.signal(signal.SIGINT, sigint_handler)
 
         GlobalStream.LIDER = lider
+        GlobalStream.IPV4 = ipv4
 
-        GlobalStream.NETWORK = Network.Network(server)
+        GlobalStream.NETWORK = Network.Network(GlobalStream.IPV4, server)
         Logger.LOGGER.debug("Network interface created")
         Logger.LOGGER.info("Stream port is: %s", GlobalStream.NETWORK.get_port())
 
@@ -57,7 +58,7 @@ def send_port_allocated():
 
         Logger.LOGGER.info("Sending port allocated")
         packet = UtilsPackets.mount_byte_packet(TypesPackets.PORT_ALLOCATED)
-        GlobalStream.NETWORK.send(GlobalStream.LIDER, packet)
+        GlobalStream.NETWORK.send(GlobalStream.LIDER, packet, GlobalStream.IPV4)
 
         Timer.Timer(GlobalStream.PORT_ALLOCATED_TIMEOUT, send_port_allocated)
         Logger.LOGGER.debug("Port allocated retransmit timer initiated")
@@ -133,7 +134,7 @@ def send_packet_to_client(clients, packet):
     '''
     for client in clients:
         try:
-            GlobalStream.NETWORK.send(client, packet)
+            GlobalStream.NETWORK.send(client, packet, GlobalStream.IPV4)
 
         except Exception as e:
             Logger.LOGGER.error("An error occurred: %s", str(e))
@@ -145,7 +146,7 @@ def send_packets_to_clients(clients, packets):
     for client in clients:
         for packet in packets:
             try:
-                GlobalStream.NETWORK.send(client, packet)
+                GlobalStream.NETWORK.send(client, packet, GlobalStream.IPV4)
             except Exception as e:
                 Logger.LOGGER.error("An error occurred: %s", str(e))
         

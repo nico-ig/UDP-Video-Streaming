@@ -3,6 +3,8 @@ import queue
 
 from src.utils import StreamHeap as sh
 
+IPV4 = False
+
 DICT_CLIENT = {}
 DICT_WATCHDOG = {}
 CHILDREN = {}

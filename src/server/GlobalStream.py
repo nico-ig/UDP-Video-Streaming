@@ -1,6 +1,8 @@
 from concurrent.futures import thread
 import threading
 
+IPV4 = False
+
 INTERVAL = 500_000      # Interval in ns between stream packets
 
 LIDER = None

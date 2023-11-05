@@ -11,8 +11,8 @@ formatters:
 handlers:
   console:
     class: logging.StreamHandler
-    level: DEBUG
-    formatter: simple
+    level: INFO
+    formatter: debug
     stream: ext://sys.stdout
 
   alsa_file_handler:

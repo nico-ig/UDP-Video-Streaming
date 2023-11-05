@@ -7,6 +7,7 @@ import threading
 from src.utils import Logger
 from src.utils import StreamHeap as sh
 
+IPV4 = False
 NETWORK = None          # Network interface
 SERVER = None           # Server address
 SERVER_TIMER = None     

@@ -20,11 +20,11 @@ def main():
     '''
     try:
         if len(sys.argv) < 3:
-            print("Usage: python Server.py <hostname> <port> <interval ns(optional>)")
+            print("Usage: python Server.py <hostname> <port> -i <interval ns(optional>) -4")
             exit()
 
-        if len(sys.argv) >= 4:
-            GlobalStream.INTERVAL = sys.argv[3]
+        if sys.argv[3] == 'i':
+            GlobalStream.INTERVAL = sys.argv[4]
 
         Logger.start_logger('server')
         Logger.set_logger('server')
@@ -35,7 +35,8 @@ def main():
         GlobalServer.SERVER_NAME = sys.argv[1]
         GlobalServer.SERVER_PORT = sys.argv[2]
 
-        GlobalServer.NETWORK = Network.Network(GlobalServer.SERVER_NAME, GlobalServer.SERVER_PORT)
+        GlobalServer.IPV4 = True if sys.argv[-1] == "-4" else False
+        GlobalServer.NETWORK = Network.Network(GlobalServer.IPV4, GlobalServer.SERVER_NAME, GlobalServer.SERVER_PORT)
         Logger.LOGGER.debug("Network interface created")
 
         HandshakeServer.server_handshake()

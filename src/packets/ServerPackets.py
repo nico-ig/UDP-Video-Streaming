@@ -69,7 +69,7 @@ def parse_new_registration(data, source):
         packet += struct.pack('Q', GlobalStream.INTERVAL)
 
         Logger.LOGGER.info("Sending register ack to client %s", source)
-        GlobalStream.NETWORK.send(source, packet) 
+        GlobalStream.NETWORK.send(source, packet, GlobalStream.IPV4) 
 
     except Exception as e:
         Logger.LOGGER.error("An error occurred: %s", str(e))

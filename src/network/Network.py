@@ -12,14 +12,14 @@ class Network:
     '''
     Creates and manages the network interface
     '''
-    def __init__(self, host='', port=0):
+    def __init__(self, ipv4=False, host='', port=0):
         try:
             self.stop_event = threading.Event()
             self.callbacks = {}
             self.packet_queue = queue.Queue()
             self.packet_received = threading.Event()
 
-            self.socket = Socket.Socket(host, port, self.packet_queue)
+            self.socket = Socket.Socket(host, port, self.packet_queue, ipv4)
             self.host_ip, self.host_port = self.socket.get_address()
 
             self.handle_thread = Utils.start_thread(self.handle_packets)
@@ -61,7 +61,7 @@ class Network:
         except:
             pass
 
-    def send(self, destination, packet):
+    def send(self, destination, packet, ipv4=False):
         '''
         Sends a packet to a destination
         '''
@@ -69,7 +69,7 @@ class Network:
             if self.stop_event.is_set():
                 return
 
-            self.socket.send(destination, packet)
+            self.socket.send(destination, packet, ipv4)
         except:
             pass
 

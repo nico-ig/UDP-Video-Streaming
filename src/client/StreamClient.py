@@ -62,7 +62,7 @@ def music_choices():
 # def music_request():
 #     Network.register_callback(TypesPackets.MUSIC_REQUEST, start_streaming)
 #     music_id = music_choices()
-#     Network.send(server, TypesPackets.MUSIC_REQUEST, music_id)
+#     Network.send(server, TypesPackets.MUSIC_REQUEST, music_id, GlobalClient.IPV4)
 
 
 #### Dont forget to unregister from other packet types no longer relevants

@@ -33,7 +33,7 @@ def send_registration_packet():
             return
             
         packet = UtilsPackets.mount_byte_packet(TypesPackets.REGISTER)
-        GlobalClient.NETWORK.send(GlobalClient.SERVER, packet)
+        GlobalClient.NETWORK.send(GlobalClient.SERVER, packet, GlobalClient.IPV4)
         Logger.LOGGER.debug("Registration send")
 
         Timer.Timer(GlobalClient.RETRANSMIT_TIMEOUT, send_registration_packet)
