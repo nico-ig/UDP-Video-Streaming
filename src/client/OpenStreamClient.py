@@ -62,7 +62,7 @@ def wait_port_allocated():
             return
 
         Logger.LOGGER.info("Port allocated received")
-        Logger.LOGGER.info("Available audios are: %s", GlobalClient.AUDIOS)
+        Logger.LOGGER.info("Available audios are: %s", GlobalClient.AUDIO_TITLES)
         get_audio_choice()
 
         Logger.LOGGER.info("Sending port ack")
@@ -92,7 +92,7 @@ def get_audio_choice():
         print("Timeout, using default audio ID: " + str(GlobalClient.AUDIO_ID))
 
 
-    if GlobalClient.AUDIO_ID >= len(GlobalClient.AUDIOS):
+    if GlobalClient.AUDIO_ID >= len(GlobalClient.AUDIO_TITLES):
         GlobalClient.AUDIO_ID = 0
         print("Invalid value, using default ID: " + str(GlobalClient.AUDIO_ID))
         
@@ -104,5 +104,5 @@ def print_available_audios():
     '''
     print("Available audios:")
     print("ID / Audio Title")
-    for i in range(0, len(GlobalClient.AUDIOS)):
-        print(str(i) + " / " + GlobalClient.AUDIOS[i])
+    for i in range(0, len(GlobalClient.AUDIO_TITLES)):
+        print(str(i) + " / " + GlobalClient.AUDIO_TITLES[i])

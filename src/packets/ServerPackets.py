@@ -80,10 +80,25 @@ def mount_port_allocated_packet():
     '''
     Mount the packet with the avaiable audios
     '''
-    packet = bytes([TypesPackets.PORT_ALLOCATED])
+    try:
+        packet = bytes([TypesPackets.PORT_ALLOCATED])
 
-    packet += struct.pack('Q', len(GlobalServer.AUDIOS))
-    for title in GlobalServer.AUDIOS:
-        packet += Utils.serialize_str(title)
-    
-    return packet
+        packet += struct.pack('Q', len(GlobalStream.AUDIO_TITLES))
+        for title in GlobalStream.AUDIO_TITLES:
+            packet += Utils.serialize_str(title)
+        
+        return packet
+    except Exception as e:
+        Logger.LOGGER.error("An error occurred: %s", str(e))
+
+def parse_audio_config_ack(payload, source):
+    '''
+    Parse audio config ack from registered clients
+    '''
+    try:
+        if len(payload) != 0 or not source in GlobalStream.CLIENTS:
+            return
+
+        GlobalStream.CONFIRMED_CLIENTS.add(source)
+    except Exception as e:
+        Logger.LOGGER.error("An error occurred: %s", str(e))

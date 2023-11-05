@@ -15,6 +15,8 @@ from src.server import GlobalServer
 from src.server import GlobalStream
 from src.server import HandshakeServer
 
+from src.packets import AudioPackets
+
 def main():
     '''
     Starts and manages the server
@@ -24,7 +26,7 @@ def main():
             print("Usage: python Server.py <hostname> <port> -i <interval ns(optional>) -4")
             exit()
 
-        if sys.argv[3] == 'i':
+        if len(sys.argv) > 3 and sys.argv[3] == 'i':
             GlobalStream.INTERVAL = sys.argv[4]
 
         Logger.start_logger('server')
@@ -40,8 +42,11 @@ def main():
         GlobalServer.NETWORK = Network.Network(GlobalServer.IPV4, GlobalServer.SERVER_NAME, GlobalServer.SERVER_PORT)
         Logger.LOGGER.debug("Network interface created")
 
-        GlobalServer.AUDIOS = Utils.get_audio_titles(GlobalServer.AUDIO_FOLDER)
-        Logger.LOGGER.info("Available audios: %s", GlobalServer.AUDIOS)
+        GlobalServer.AUDIO_PACKETS = AudioPackets.mount_audio_packets(GlobalServer.BLOCKSIZE, GlobalServer.AUDIO_FOLDER, Logger.LOGGER) 
+        Logger.LOGGER.info("Audios packets loaded")
+
+        GlobalServer.AUDIO_TITLES = Utils.get_audio_titles(GlobalServer.AUDIO_FOLDER)
+        Logger.LOGGER.info("Available audios: %s", GlobalServer.AUDIO_TITLES)
 
         HandshakeServer.server_handshake()
 

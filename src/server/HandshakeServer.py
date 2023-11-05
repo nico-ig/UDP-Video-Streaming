@@ -42,7 +42,7 @@ def start_new_streaming(client):
             GlobalServer.CHILDREN[client].join()
 
         Logger.LOGGER.info("Starting a new process for client %s", client)
-        GlobalServer.CHILDREN[client] = multiprocessing.Process(target=StreamServer.new_stream, args=(GlobalServer.SERVER_NAME, client, GlobalServer.IPV4))
+        GlobalServer.CHILDREN[client] = multiprocessing.Process(target=StreamServer.new_stream, args=(GlobalServer.SERVER_NAME, client, GlobalServer.IPV4, GlobalServer.AUDIO_TITLES, GlobalServer.AUDIO_PACKETS))
         GlobalServer.CHILDREN[client].start()
 
     except Exception as e:

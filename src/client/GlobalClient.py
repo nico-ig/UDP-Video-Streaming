@@ -5,17 +5,23 @@ Global values for the client
 import threading
 
 from src.utils import Logger
-from src.utils import StreamHeap as sh
 
 IPV4 = False
 NETWORK = None          # Network interface
 SERVER = None           # Server address
 SERVER_TIMER = None     
 TIMER = None
+PLAYER = None
 
-AUDIOS = []
+AUDIO_TITLE = ''
+AUDIO_SAMPLERATE = 0
+AUDIO_CHANNELS = 0
+AUDIO_BLOCKSIZE = 0
+AUDIO_BUFFER = None
+AUDIO_TITLES = []
 AUDIO_ID = -1
 AUDIO_CHOICE_TIMEOUT = 5
+AUDIO_CONFIG = threading.Event()
 
 HANDSHAKE_TIMEOUT = 30
 SERVER_TIMEOUT = 10              # Time in seconds before timeouting when not receiving packets from server
@@ -62,6 +68,9 @@ def SIGINT_HANDLER(signum=0, frame=''):
             
         if TIMER != None:
             TIMER.stop()
+
+        if PLAYER != None:
+            PLAYER.stop()
 
     except Exception as e:
         Logger.LOGGER.error("An error occurred: %s", str(e))

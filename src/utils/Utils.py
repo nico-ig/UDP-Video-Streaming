@@ -92,14 +92,14 @@ def is_same_ip(ip1, ip2, ipv4):
     '''
     return resolve_name(ip1, ipv4) == resolve_name(ip2, ipv4)
 
-def is_same_address(addr1, addr2):
+def is_same_address(addr1, addr2, ipv4):
     '''
     Verify if the two address are the same ip address and port
     '''
     addr1_ip, addr1_port = addr1
     addr2_ip, addr2_port = addr2
 
-    return is_same_ip(addr1_ip, addr2_ip) and (addr1_port == addr2_port)
+    return is_same_ip(addr1_ip, addr2_ip, ipv4) and (addr1_port == addr2_port, ipv4)
 
 def timestamp():
     '''

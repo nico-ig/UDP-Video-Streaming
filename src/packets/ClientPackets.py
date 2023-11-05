@@ -45,14 +45,14 @@ def parse_port_allocated(payload, source):
         Logger.LOGGER.error("An error occurred: %s", str(e))
         
 def parse_audios(payload):
-    GlobalClient.AUDIOS = []
+    GlobalClient.AUDIO_TITLES = []
 
     cnt = struct.unpack('Q', payload[:8])[0]
     payload = payload[8:]
 
     for i in range(0, cnt):
         title, payload = Utils.deserialize_str(payload)
-        GlobalClient.AUDIOS.append(title)
+        GlobalClient.AUDIO_TITLES.append(title)
         
     if payload != b'':
         raise Exception(f'Audio title packet is not valid')
@@ -65,7 +65,7 @@ def parse_register_ack(payload, source):
     Parse the register ack packet 
     '''
     try:
-        if len(payload) != 2 or not Utils.is_same_address(GlobalClient.SERVER, source):
+        if len(payload) != 2 or not Utils.is_same_address(GlobalClient.SERVER, source, GlobalClient.IPV4):
             pass
             
         Logger.LOGGER.debug("Received register ack from %s", source)
@@ -77,5 +77,50 @@ def parse_register_ack(payload, source):
 
         GlobalClient.REGISTER_ACK.set()
         
+    except Exception as e:
+        Logger.LOGGER.error("An error occurred: %s", str(e))
+
+def parse_audio_config(payload, source):
+    '''
+    Parse the configs for selected audio
+    '''
+    try:
+        if not Utils.is_same_address(GlobalClient.SERVER, source, GlobalClient.IPV4):
+            return
+
+        GlobalClient.AUDIO_TITLE, payload = Utils.deserialize_str(payload)
+
+        if len(payload) != 24:
+            GlobalClient.AUDIO_TITLE = ''
+            return
+
+        GlobalClient.AUDIO_SAMPLERATE = struct.unpack('Q', payload[:8])[0]
+        GlobalClient.AUDIO_CHANNELS = struct.unpack('Q', payload[8:16])[0]
+        GlobalClient.AUDIO_BLOCKSIZE = struct.unpack('Q', payload[16:])[0]
+
+        GlobalClient.AUDIO_CONFIG.set()
+
+        GlobalClient.SERVER_TIMER.kick()
+
+    except Exception as e:
+        Logger.LOGGER.error("An error occurred: %s", str(e))
+
+def parse_stream_packets(payload, source):
+    '''
+    Add a packet to the stream buffer
+    '''
+    try:
+        if not Utils.is_same_address(GlobalClient.SERVER, source, GlobalClient.IPV4):
+            return
+
+        if len(payload) < 9:
+            return
+
+        seq = struct.unpack('Q', payload[:8])[0]
+        stream = payload[8:]
+        GlobalClient.AUDIO_BUFFER.add_to_buffer(seq, stream)
+
+        GlobalClient.SERVER_TIMER.kick()
+
     except Exception as e:
         Logger.LOGGER.error("An error occurred: %s", str(e))
