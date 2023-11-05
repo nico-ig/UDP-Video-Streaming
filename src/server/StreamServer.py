@@ -6,16 +6,17 @@ This should run in a separeted process from the main server
 
 import signal
 
-from src.server import GlobalStream
+from src.utils import Utils
+from src.utils import Timer
+from src.utils import Logger
 
 from src.network import Network
 
-from src.packets import TypesPackets
-from src.packets import UtilsPackets
-from src.packets import ServerPackets
+from src.server import GlobalStream
+from src.server import GlobalServer
 
-from src.utils import Timer
-from src.utils import Logger
+from src.packets import TypesPackets
+from src.packets import ServerPackets
 
 def new_stream(server, lider, ipv4):
     '''
@@ -57,7 +58,7 @@ def send_port_allocated():
             return
 
         Logger.LOGGER.info("Sending port allocated")
-        packet = UtilsPackets.mount_byte_packet(TypesPackets.PORT_ALLOCATED)
+        packet = ServerPackets.mount_port_allocated_packet()
         GlobalStream.NETWORK.send(GlobalStream.LIDER, packet, GlobalStream.IPV4)
 
         Timer.Timer(GlobalStream.PORT_ALLOCATED_TIMEOUT, send_port_allocated)
@@ -88,7 +89,8 @@ def start_registration():
             sigint_handler()
             return
             
-        Logger.LOGGER.info("Should start streaming, registered clients are: %s", GlobalStream.CLIENTS)
+        GlobalStream.AUDIO_FILE = GlobalServer.AUDIOS[GlobalStream.AUDIO_ID]
+        Logger.LOGGER.info("Streaming %s, registered clients are: %s", GlobalStream.AUDIO_FILE, GlobalStream.CLIENTS)
 
     except Exception as e:
         Logger.LOGGER.error("An error occurred: %s", str(e))

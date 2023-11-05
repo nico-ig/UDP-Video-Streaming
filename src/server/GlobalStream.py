@@ -16,6 +16,9 @@ PORT_ALLOCATED_TIMEOUT = 5
 CLIENTS = set()
 START_EVENT = threading.Event()
 STOP_EVENT = threading.Event()
+
+AUDIO_ID = -1
+AUDIO_FILE = ''
 PORT_ACK_RECEIVED = threading.Event()
 
 REGISTRATION_DURATION = 15

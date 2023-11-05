@@ -123,3 +123,23 @@ def delete_older_files(path, keep=2):
             os.remove(file)
         except:
             continue
+
+def get_audio_titles(path):
+    titles = []
+    files = get_audio_files(path)
+
+    for file in files:
+        parts = file.replace('.mp3', '').split('_') 
+        
+        autor = parts[0].replace('-', ' ').title()
+        audio = parts[1].replace('-', ' ').title()
+        title = autor + ': ' + audio
+        titles.append(title)
+
+    return titles
+
+def get_audio_files(path):
+    '''
+    Returns an array with the audio file names avaiable
+    '''
+    return [file for file in os.listdir(path) if file.endswith('.mp3')]

@@ -6,13 +6,14 @@ import os
 import sys
 import signal
 
-from src.server import GlobalServer
-from src.server import HandshakeServer
-from src.server import GlobalStream
+from src.utils import Utils
+from src.utils import Logger
 
 from src.network import Network
 
-from src.utils import Logger
+from src.server import GlobalServer
+from src.server import GlobalStream
+from src.server import HandshakeServer
 
 def main():
     '''
@@ -38,6 +39,9 @@ def main():
         GlobalServer.IPV4 = True if sys.argv[-1] == "-4" else False
         GlobalServer.NETWORK = Network.Network(GlobalServer.IPV4, GlobalServer.SERVER_NAME, GlobalServer.SERVER_PORT)
         Logger.LOGGER.debug("Network interface created")
+
+        GlobalServer.AUDIOS = Utils.get_audio_titles(GlobalServer.AUDIO_FOLDER)
+        Logger.LOGGER.info("Available audios: %s", GlobalServer.AUDIOS)
 
         HandshakeServer.server_handshake()
 

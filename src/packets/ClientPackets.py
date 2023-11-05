@@ -10,6 +10,8 @@ from src.utils import Logger
 
 from src.client import GlobalClient
 
+from src.packets import TypesPackets
+
 list_received = threading.Event()
 
 def parse_stream_packet(data, source):
@@ -21,34 +23,19 @@ def parse_stream_packet(data, source):
 
     return key, data
 
-def parse_music_list(packet, source):
-    music_list = []
-
-    while packet != []:
-        id = packet[0]
-        packet = packet[1:]
-        tam = packet[0]
-        packet = packet[1:]
-        nome = packet[:tam]
-        GlobalClient.music_list.append(id[0], nome[0])
-   # Eu colocaria o kick na funcao que ta esperando o list_received ser setado 
-    GlobalClient.SERVER_TIMER.kick()
-    list_received.set()
-
 def parse_port_allocated(payload, source):
     '''
     Parse the payload in a port allocated packet    
     '''
     try:
-        if len(payload) != 0:
-            return
-        
         server_ip, server_port = GlobalClient.SERVER
         source_ip, source_port = source
 
         if not Utils.is_same_ip(server_ip, source_ip, GlobalClient.IPV4):
             return
         
+        parse_audios(payload)
+
         Logger.LOGGER.debug("Received port allocated from %s", source)
 
         GlobalClient.SERVER = source
@@ -57,6 +44,22 @@ def parse_port_allocated(payload, source):
     except Exception as e:
         Logger.LOGGER.error("An error occurred: %s", str(e))
         
+def parse_audios(payload):
+    GlobalClient.AUDIOS = []
+
+    cnt = struct.unpack('Q', payload[:8])[0]
+    payload = payload[8:]
+
+    for i in range(0, cnt):
+        title, payload = Utils.deserialize_str(payload)
+        GlobalClient.AUDIOS.append(title)
+        
+    if payload != b'':
+        raise Exception(f'Audio title packet is not valid')
+
+def mount_port_ack_packet():
+    return bytes([TypesPackets.PORT_ACK]) + struct.pack('Q', GlobalClient.AUDIO_ID)
+
 def parse_register_ack(payload, source):
     '''
     Parse the register ack packet 

@@ -10,6 +10,7 @@ from src.server import GlobalStream
 from src.packets import TypesPackets
 from src.packets import UtilsPackets
 
+from src.utils import Utils
 from src.utils import Logger
 
 def parse_new_client(data, source):
@@ -26,12 +27,12 @@ def parse_new_client(data, source):
     except Exception as e:
         Logger.LOGGER.error("An error occurred: %s", str(e))
 
-def parse_port_ack(data, source):
+def parse_port_ack(payload, source):
     '''
     Deals with port ack incoming packets
     '''
     try:
-        if len(data) != 0:
+        if len(payload) != 8:
             return
 
         source_ip, source_port = source
@@ -42,6 +43,7 @@ def parse_port_ack(data, source):
             return
 
         Logger.LOGGER.info("Port ack received")
+        GlobalStream.AUDIO_ID = struct.unpack('Q', payload)[0]
         GlobalStream.PORT_ACK_RECEIVED.set()
 
         GlobalStream.LIDER_TIMER.stop()
@@ -73,3 +75,15 @@ def parse_new_registration(data, source):
 
     except Exception as e:
         Logger.LOGGER.error("An error occurred: %s", str(e))
+
+def mount_port_allocated_packet():
+    '''
+    Mount the packet with the avaiable audios
+    '''
+    packet = bytes([TypesPackets.PORT_ALLOCATED])
+
+    packet += struct.pack('Q', len(GlobalServer.AUDIOS))
+    for title in GlobalServer.AUDIOS:
+        packet += Utils.serialize_str(title)
+    
+    return packet
