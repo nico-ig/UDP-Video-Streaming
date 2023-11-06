@@ -32,19 +32,23 @@ def start_player():
     '''
     Start the stream player
     '''
-    alsa_logger = Logger.get_logger('alsa')
-    AlsaUtils.set_error_handler(alsa_logger)
+    try:
+        alsa_logger = Logger.get_logger('alsa')
+        AlsaUtils.set_error_handler(alsa_logger)
 
-    samplerate = GlobalClient.AUDIO_SAMPLERATE
-    channels = GlobalClient.AUDIO_CHANNELS
-    blocksize = GlobalClient.AUDIO_BLOCKSIZE
+        samplerate = GlobalClient.AUDIO_SAMPLERATE
+        channels = GlobalClient.AUDIO_CHANNELS
+        blocksize = GlobalClient.AUDIO_BLOCKSIZE
 
-    player = sd.RawOutputStream(
-        samplerate=samplerate, blocksize=blocksize // 8,
-        device=None, channels=channels, dtype='float32',
-        callback=callback, finished_callback=None)
+        player = sd.RawOutputStream(
+            samplerate=samplerate, blocksize=blocksize // 8,
+            device=None, channels=channels, dtype='float32',
+            callback=callback, finished_callback=None)
 
-    GlobalClient.AUDIO_BUFFER = sh.StreamHeap()
+        GlobalClient.AUDIO_BUFFER = sh.StreamHeap()
 
-    player.start()
-    Logger.LOGGER.info("Player started, waiting for stream to start")
+        player.start()
+        Logger.LOGGER.info("Player started, waiting for stream to start")
+        
+    except Exception as e:
+        Logger.LOGGER.error("An error occurred: %s", str(e))
