@@ -52,3 +52,4 @@ def start_player():
         
     except Exception as e:
         Logger.LOGGER.error("An error occurred: %s", str(e))
+        GlobalClient.CLOSE_CLIENT()

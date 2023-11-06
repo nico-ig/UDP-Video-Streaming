@@ -3,11 +3,9 @@ Manages the handshake with the server
 '''
 
 from src.client import GlobalClient
-from src.client import StreamClient
-from src.client import OpenStreamClient
 from src.client import RegisterClient
+from src.client import OpenStreamClient
 
-from src.utils import Utils
 from src.utils import Timer
 from src.utils import Logger
 
@@ -20,13 +18,13 @@ def client_handshake(option):
         
         if option == 'join':
             Logger.LOGGER.info("Joining stream")
+            RegisterClient.register_to_stream()
 
         else:
-            Logger.LOGGER.info("Entering new stream")
-            Utils.start_thread(OpenStreamClient.open_stream_in_server, True)
+            Logger.LOGGER.info("Opening a new stream")
+            OpenStreamClient.open_stream_in_server()
 
-        Utils.start_thread(RegisterClient.register_to_stream, True)
-        StreamClient.listen_to_stream()
 
     except Exception as e:
         Logger.LOGGER.error("An error occurred: %s", str(e))
+        GlobalClient.CLOSE_CLIENT()

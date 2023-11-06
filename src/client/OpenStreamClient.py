@@ -13,6 +13,7 @@ from src.packets import TypesPackets
 from src.packets import ClientPackets
 
 from src.client import GlobalClient
+from src.client import RegisterClient
 
 def open_stream_in_server():
     '''
@@ -26,6 +27,7 @@ def open_stream_in_server():
 
     except Exception as e:
         Logger.LOGGER.error("An error occurred: %s", str(e))
+        GlobalClient.CLOSE_CLIENT()
 
 def send_port_request():
     '''
@@ -44,6 +46,7 @@ def send_port_request():
 
     except Exception as e:
         Logger.LOGGER.error("An error occurred: %s", str(e))
+        send_port_request()
 
 def wait_port_allocated():
     '''
@@ -65,8 +68,11 @@ def wait_port_allocated():
         Logger.LOGGER.info("Available audios are: %s", GlobalClient.AUDIO_TITLES)
         get_audio_choice()
 
+        RegisterClient.register_to_stream()
+
     except Exception as e:
         Logger.LOGGER.error("An error occurred: %s", str(e))
+        wait_port_allocated()
 
 def get_audio_choice():
     '''
@@ -98,6 +104,7 @@ def get_audio_choice():
 
     except Exception as e:
         Logger.LOGGER.error("An error occurred: %s", str(e))
+        get_audio_choice()
 
 def print_available_audios():
     '''
@@ -108,5 +115,7 @@ def print_available_audios():
         print("ID / Audio Title")
         for i in range(0, len(GlobalClient.AUDIO_TITLES)):
             print(str(i) + " / " + GlobalClient.AUDIO_TITLES[i])
+
     except Exception as e:
         Logger.LOGGER.error("An error occurred: %s", str(e))
+        print_available_audios()

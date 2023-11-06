@@ -14,6 +14,5 @@ def listen_to_stream():
     Logger.LOGGER.info("Waiting for audio config to start listening to stream")
     GlobalClient.AUDIO_CONFIG.wait()
     
-    Logger.LOGGER.info("Listening to stream")
     GlobalClient.NETWORK.register_callback(TypesPackets.STREAM, ClientPackets.parse_stream_packets)
     
