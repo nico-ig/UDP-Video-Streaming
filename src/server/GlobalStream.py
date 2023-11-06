@@ -3,7 +3,7 @@ import threading
 
 IPV4 = False
 
-INTERVAL = 500_000      # Interval in ns between stream packets
+INTERVAL = 6_250_000      # Interval in ns between stream packets
 
 LIDER = None
 
@@ -26,4 +26,4 @@ AUDIO_PACKETS = []
 
 PORT_ACK_RECEIVED = threading.Event()
 
-REGISTRATION_DURATION = 15
+REGISTRATION_DURATION = 30

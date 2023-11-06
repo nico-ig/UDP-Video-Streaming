@@ -13,6 +13,7 @@ SERVER_TIMER = None
 TIMER = None
 PLAYER = None
 
+AUDIO_CHOSEN = threading.Event()
 AUDIO_TITLE = ''
 AUDIO_SAMPLERATE = 0
 AUDIO_CHANNELS = 0
@@ -36,12 +37,12 @@ PORT_ALLOCATED = threading.Event()
 REGISTER_ACK = threading.Event()
 STREAM_STARTED = threading.Event()
 
-def CLOSE_CLIENT(close_stream_not_started=False):
+def CLOSE_CLIENT():
     '''
     Handle the end of handhsake/registration timer
     '''
     try:
-        if (close_stream_not_started and not STREAM_STARTED.is_set()) or not REGISTER_ACK.is_set():
+        if not REGISTER_ACK.is_set():
             Logger.LOGGER.info("Couldn't start stream")
             SIGINT_HANDLER()
 

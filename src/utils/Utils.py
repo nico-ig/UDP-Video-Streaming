@@ -68,16 +68,12 @@ def resolve_name(name, ipv4):
     '''
     try:
         if name == '':
-            return 'localhost'
+            return '0.0.0.0' if ipv4 == True else '::1'
         
         if is_valid_ip_address(name, ipv4):
             return name
 
-        if ipv4 == True:
-            socket_type = socket.AF_INET
-
-        else:
-            socket_type = socket.AF_INET6
+        socket_type = socket.AF_INET if ipv4 == True else socket.AF_INET6
 
         addrinfo = socket.getaddrinfo(name, None, socket_type, socket.SOCK_DGRAM)[0]
         return addrinfo[4][0]

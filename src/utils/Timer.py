@@ -33,7 +33,7 @@ class Timer:
             while not self.stop_event.is_set():
                 if (time.time_ns() - self.last_kick >= self.timeout):
                     if self.args != '':
-                        self.callback(self.args)
+                        self.callback(*self.args)
                     else:
                         self.callback()
                     break

@@ -1,8 +1,6 @@
 import threading
 import queue
 
-from src.utils import StreamHeap as sh
-
 IPV4 = False
 
 DICT_CLIENT = {}
@@ -13,7 +11,7 @@ SERVER_NAME = ""
 SERVER_PORT = 0
 NETWORK = None
 
-BLOCKSIZE = 1024 # Power of two that fits in MTU = 1500
+BLOCKSIZE = 8192
 
 STOP_EVENT = threading.Event()
 CLIENTS_QUEUE = queue.Queue()

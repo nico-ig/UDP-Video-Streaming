@@ -17,7 +17,7 @@ def callback(outdata, frames, time, status):
     '''
     try:
         seq, stream = GlobalClient.AUDIO_BUFFER.remove_from_buffer()
-        
+
         if len(stream) < len(outdata):
             outdata[:len(stream)] = stream
             outdata[len(stream):] = b'\x00' * (len(outdata) - len(stream))
@@ -47,4 +47,4 @@ def start_player():
     GlobalClient.AUDIO_BUFFER = sh.StreamHeap()
 
     player.start()
-    Logger.LOGGER.info("Player started")
+    Logger.LOGGER.info("Player started, waiting for stream to start")

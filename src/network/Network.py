@@ -83,6 +83,20 @@ class Network:
         except:
             pass
 
+    
+    def get_buffer_size(self):
+        '''
+        Gets the current buffer size for incoming packets
+        '''
+        return self.socket.get_buffer_size()
+    
+    def set_buffer_size(self, new_size):
+        '''
+        Changes the buffer size of incoming packets
+        '''
+        self.socket.set_buffer_size(new_size)
+
+
     def stop(self):
         '''
         Stops the network interface

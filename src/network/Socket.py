@@ -47,16 +47,17 @@ class Socket:
     '''
     Creates and manage a socket
     '''
-    def __init__(self, host, port, recv_queue, ipv4=False):
+    def __init__(self, host, port, recv_queue, ipv4=False, buffer_size=1024):
         try:
             self.host_name = host 
             self.recv_queue = recv_queue
+            self.buffer_size = buffer_size
 
             self.host_ip, self.host_port, self.local_socket = creates_socket(host, int(port), ipv4)
 
             self.stop_event = threading.Event()
             self.receive_thread = Utils.start_thread(self.receive_packets)
-            Logger.LOGGER.debug("Binded to address %s", host)
+            Logger.LOGGER.debug("Binded to address %s", (self.host_ip, self.host_port))
 
         except Exception as e:
             Logger.LOGGER.error("An error occurred: %s", str(e))
@@ -70,12 +71,12 @@ class Socket:
 
         while not self.stop_event.is_set():
             try:
-                packet, source = self.local_socket.recvfrom(1024)
+                packet, source = self.local_socket.recvfrom(self.buffer_size)
                 packet_type, packet_payload = parse_packet(packet)
 
                 self.recv_queue.put((packet_type, packet_payload, source[:2]))
 
-                Logger.LOGGER.debug('Packet received: source: %s, type: %d', source, packet_type)
+                Logger.LOGGER.debug('Packet received: source: %s, type: %d, payload len: %d', source[:2], packet_type, len(packet_payload))
             except BlockingIOError:
                 pass
 
@@ -110,6 +111,18 @@ class Socket:
             return self.host_ip, self.host_port
         except:
             pass
+
+    def get_buffer_size(self):
+        '''
+        Gets the current buffer size for incoming packets
+        '''
+        return self.buffer_size
+    
+    def set_buffer_size(self, new_size):
+        '''
+        Changes the buffer size of incoming packets
+        '''
+        self.buffer_size = new_size
 
     def stop(self):
         ''' 

@@ -11,8 +11,9 @@ from src.utils import Logger
 #### Dont forget to unregister from other packet types no longer relevants
 
 def listen_to_stream():
-    GlobalClient.SERVER_TIMER = Timer.Timer(GlobalClient.STREAM_TIMEOUT, GlobalClient.CLOSE_CLIENT)
-    Logger.LOGGER.debug("Stream packets timer initiated")
-
-    GlobalClient.NETWORK.register_callback(TypesPackets.STREAM, ClientPackets.parse_stream_packet)
+    Logger.LOGGER.info("Waiting for audio config to start listening to stream")
+    GlobalClient.AUDIO_CONFIG.wait()
+    
+    Logger.LOGGER.info("Listening to stream")
+    GlobalClient.NETWORK.register_callback(TypesPackets.STREAM, ClientPackets.parse_stream_packets)
     

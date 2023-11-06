@@ -49,8 +49,6 @@ def parse_port_ack(payload, source):
         GlobalStream.LIDER_TIMER.stop()
         Logger.LOGGER.debug("Port allocated retransmit timer stopped")
 
-        GlobalStream.NETWORK.unregister_callback(TypesPackets.PORT_ACK)
-
     except Exception as e:
         Logger.LOGGER.error("An error occurred: %s", str(e))
 

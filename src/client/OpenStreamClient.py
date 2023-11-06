@@ -65,10 +65,6 @@ def wait_port_allocated():
         Logger.LOGGER.info("Available audios are: %s", GlobalClient.AUDIO_TITLES)
         get_audio_choice()
 
-        Logger.LOGGER.info("Sending port ack")
-        packet = ClientPackets.mount_port_ack_packet()
-        GlobalClient.NETWORK.send(GlobalClient.SERVER, packet, GlobalClient.IPV4)
-
     except Exception as e:
         Logger.LOGGER.error("An error occurred: %s", str(e))
 
@@ -76,33 +72,41 @@ def get_audio_choice():
     '''
     Get the audio id that should be requested
     '''
-    if GlobalClient.AUDIO_ID >= 0:
-        return
+    try:
+        if GlobalClient.AUDIO_ID >= 0:
+            return
 
-    print("Choose an audio ID to play it")
-    print_available_audios()
+        print("Choose an audio ID to play it")
+        print_available_audios()
 
-    input_list = select.select([sys.stdin], [], [], GlobalClient.AUDIO_CHOICE_TIMEOUT)[0]
-    if input_list:
-        GlobalClient.AUDIO_ID = int(sys.stdin.readline().strip())
-        print("You chose audio ID: " + str(GlobalClient.AUDIO_ID))
+        input_list = select.select([sys.stdin], [], [], GlobalClient.AUDIO_CHOICE_TIMEOUT)[0]
+        if input_list:
+            GlobalClient.AUDIO_ID = int(sys.stdin.readline().strip())
+            print("You chose audio ID: " + str(GlobalClient.AUDIO_ID))
 
-    else:
-        GlobalClient.AUDIO_ID = 0
-        print("Timeout, using default audio ID: " + str(GlobalClient.AUDIO_ID))
+        else:
+            GlobalClient.AUDIO_ID = 0
+            print("Timeout, using default audio ID: " + str(GlobalClient.AUDIO_ID))
 
 
-    if GlobalClient.AUDIO_ID >= len(GlobalClient.AUDIO_TITLES):
-        GlobalClient.AUDIO_ID = 0
-        print("Invalid value, using default ID: " + str(GlobalClient.AUDIO_ID))
-        
-    Logger.LOGGER.info(f'Requested audio id: {GlobalClient.AUDIO_ID}')
+        if GlobalClient.AUDIO_ID >= len(GlobalClient.AUDIO_TITLES):
+            GlobalClient.AUDIO_ID = 0
+            print("Invalid value, using default ID: " + str(GlobalClient.AUDIO_ID))
+            
+        GlobalClient.AUDIO_CHOSEN.set()
+        Logger.LOGGER.info(f'Requested audio id: {GlobalClient.AUDIO_ID}')
+
+    except Exception as e:
+        Logger.LOGGER.error("An error occurred: %s", str(e))
 
 def print_available_audios():
     '''
     Print title list received from server
     '''
-    print("Available audios:")
-    print("ID / Audio Title")
-    for i in range(0, len(GlobalClient.AUDIO_TITLES)):
-        print(str(i) + " / " + GlobalClient.AUDIO_TITLES[i])
+    try:
+        print("Available audios:")
+        print("ID / Audio Title")
+        for i in range(0, len(GlobalClient.AUDIO_TITLES)):
+            print(str(i) + " / " + GlobalClient.AUDIO_TITLES[i])
+    except Exception as e:
+        Logger.LOGGER.error("An error occurred: %s", str(e))

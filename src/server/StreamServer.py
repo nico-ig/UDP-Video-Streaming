@@ -44,6 +44,8 @@ def new_stream(server, lider, ipv4, audio_titles, audio_packets):
         GlobalStream.AUDIO_TITLES = audio_titles
         GlobalStream.AUDIO_PACKETS = audio_packets
 
+        GlobalStream.NETWORK.register_callback(TypesPackets.AUDIO_CONFIG_ACK, ServerPackets.parse_audio_config_ack)
+
         send_port_allocated()
         start_registration()
 
@@ -52,16 +54,16 @@ def new_stream(server, lider, ipv4, audio_titles, audio_packets):
 
 def send_port_allocated():
     '''
-    Send port allocated to lider client. After receiving ack, send audio config
+    Send port allocated to lider client. After receiving ack, send audio config to clients
     '''
     try:
-        if GlobalStream.PORT_ACK_RECEIVED.is_set():
-            GlobalStream.NETWORK.register_callback(TypesPackets.AUDIO_CONFIG_ACK, ServerPackets.parse_audio_config_ack)
-            send_audio_config()            
-        
         if GlobalStream.START_EVENT.is_set() or GlobalStream.STOP_EVENT.is_set():
             return
 
+        if GlobalStream.PORT_ACK_RECEIVED.is_set():
+            send_audio_config()            
+            return
+        
         Logger.LOGGER.info("Sending port allocated")
         packet = ServerPackets.mount_port_allocated_packet()
         GlobalStream.NETWORK.send(GlobalStream.LIDER, packet, GlobalStream.IPV4)
@@ -107,13 +109,16 @@ def start_streaming():
     audio_title = GlobalStream.AUDIO_TITLES[GlobalStream.AUDIO_ID]
     Logger.LOGGER.info("Streaming %s, registered clients are: %s", audio_title, GlobalStream.CLIENTS)
 
-    stream_packet_sent.set()
+    packet = GlobalStream.AUDIO_PACKETS[GlobalStream.AUDIO_ID][1][0]
+    send_packet_to_clients(GlobalStream.CLIENTS, packet, stream_packet_sent)
+    Timer.Timer(GlobalStream.INTERVAL / 1e9, send_packet_to_clients, (GlobalStream.CLIENTS, packet, stream_packet_sent))
+    Logger.LOGGER.debug(f"First audio stream packet sent, interval: {GlobalStream.INTERVAL / 1e9}s")
 
-    for packet in GlobalStream.AUDIO_PACKETS[GlobalStream.AUDIO_ID][1]:
+    for packet in GlobalStream.AUDIO_PACKETS[GlobalStream.AUDIO_ID][1][1:]:
         stream_packet_sent.wait()
         stream_packet_sent.clear()
 
-        Timer.Timer(GlobalStream.INTERVAL, send_stream_to_clients, packet)
+        Timer.Timer(GlobalStream.INTERVAL / 1e9, send_packet_to_clients, (GlobalStream.CLIENTS, packet, stream_packet_sent))
 
     Logger.LOGGER.info("Finished streaming")
 
@@ -121,25 +126,24 @@ def send_audio_config():
     '''
     Sends the audio config to clients, packet needs to be confirmed by client
     '''
-    if GlobalStream.START_EVENT.is_set() or len(GlobalStream.CLIENTS) == len(GlobalStream.CONFIRMED_CLIENTS):
+    if GlobalStream.STOP_EVENT.is_set():
+        return
+
+    if GlobalStream.START_EVENT.is_set():
         GlobalStream.CLIENTS = []
         GlobalStream.CLIENTS = GlobalStream.CONFIRMED_CLIENTS
         return
         
-    if GlobalStream.STOP_EVENT.is_set():
-        return
-
     config_packet = GlobalStream.AUDIO_PACKETS[GlobalStream.AUDIO_ID][0]
 
     clients_not_confirmed = list(GlobalStream.CLIENTS - GlobalStream.CONFIRMED_CLIENTS)
-    Logger.LOGGER.info("Sending audio config to clients: %s", clients_not_confirmed)
-    send_stream_to_clients(clients_not_confirmed, config_packet)
+
+    if len(clients_not_confirmed) > 0:
+        Logger.LOGGER.info("Sending audio config to clients: %s", clients_not_confirmed)
+        send_packet_to_clients(clients_not_confirmed, config_packet)
+        Logger.LOGGER.debug("Audio config retransmit timer will be initiated")
 
     Timer.Timer(GlobalStream.RETRANSMIT_TIMEOUT, send_audio_config)
-    Logger.LOGGER.debug("Audio config retransmit timer initiated")
-
-def audio_config_send():
-    pass
 
 def registration_finished():
     '''
@@ -147,14 +151,12 @@ def registration_finished():
     '''
     try:
         Logger.LOGGER.info("Registration finished")
-
-        GlobalStream.NETWORK.stop()
         GlobalStream.START_EVENT.set()
 
     except Exception as e:
         Logger.LOGGER.error("An error occurred: %s", str(e))
 
-def send_stream_to_clients(clients, packet):
+def send_packet_to_clients(clients, packet, event=None):
     '''
     Sends a packet to every client
     '''
@@ -162,7 +164,8 @@ def send_stream_to_clients(clients, packet):
         for client in clients:
             GlobalStream.NETWORK.send(client, packet, GlobalStream.IPV4)
 
-        stream_packet_sent.set()
+        if event != None:
+            event.set()
 
     except Exception as e:
         Logger.LOGGER.error("An error occurred: %s", str(e))

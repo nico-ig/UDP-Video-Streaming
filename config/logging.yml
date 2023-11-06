@@ -12,7 +12,7 @@ handlers:
   console:
     class: logging.StreamHandler
     level: INFO
-    formatter: debug
+    formatter: simple
     stream: ext://sys.stdout
 
   alsa_file_handler:

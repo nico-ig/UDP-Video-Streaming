@@ -71,11 +71,6 @@ def wait_audio_config():
             AudioClient.start_player()
             audio_config_recv = True
 
-
-        Logger.LOGGER.info("Sending audio config ack")
-        packet = bytes([TypesPackets.AUDIO_CONFIG_ACK])
-        GlobalClient.NETWORK.send(GlobalClient.SERVER, packet, GlobalClient.IPV4)
-
     except Exception as e:
         Logger.LOGGER.error("An error occurred: %s", str(e))
 
@@ -88,16 +83,25 @@ def prepare_to_listen_to_stream():
 
         GlobalClient.REGISTER_ACK.wait()
 
-        if GlobalClient.STOP_EVENT.is_set() or not GlobalClient.AUDIO_CONFIG.is_set():
+        if GlobalClient.STOP_EVENT.is_set():
             return
     
         Logger.LOGGER.info("Register ack received")
         GlobalClient.NETWORK.unregister_callback(TypesPackets.REGISTER_ACK)
 
         Logger.LOGGER.debug("Starting timer for remaining registration duration with %ss", GlobalClient.REGISTER_DURATION)
-        Timer.Timer(GlobalClient.REGISTER_DURATION * 2, GlobalClient.CLOSE_CLIENT, True)
+        Timer.Timer(GlobalClient.REGISTER_DURATION * 2, registration_finished)
 
         StreamClient.listen_to_stream()
         
     except Exception as e:
         Logger.LOGGER.error("An error occurred: %s", str(e))
+
+def registration_finished():
+    if GlobalClient.STOP_EVENT.is_set() or not GlobalClient.STREAM_STARTED.is_set():
+        Logger.LOGGER.info("Couldn't register to server")
+        GlobalClient.SIGINT_HANDLER()
+        return
+    
+    GlobalClient.SERVER_TIMER = Timer.Timer(GlobalClient.STREAM_TIMEOUT, GlobalClient.SIGINT_HANDLER)
+    Logger.LOGGER.debug("Stream packets timer initiated")
