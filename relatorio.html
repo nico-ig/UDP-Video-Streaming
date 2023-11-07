@@ -7,7 +7,7 @@
     <title>Relatório - Streaming UDP</title>
 </html>
 
-<body>
+<body bgcolor="#808080">
     <h1>Streaming UDP</h1>
     <p>Nico Iancoski Guimarães Ramos</p>
     <p>Thales Gabriel Carvalho de Lima</p>
@@ -26,6 +26,7 @@
                 <li><a href="#dificuldades-ip">Dificuladades com o IP</a></li>
             </ol>
             <li>Conclusão</li>
+            <li><a href="#codigo-fonte">Código Fonte</a></li>
         </ol>
     </section>
     <section id="objetivo">
@@ -55,23 +56,27 @@
                 Para isso, possui mais duas fases: a fase de handshake e a fase de streaming.
             </p>
             <h3 id="handshake">Fase Handshake</h3>
-            <p>
-                Na fase de handshake o cliente inicialmente escolhe entre criar uma nova stream ou se conectar a uma stream já existente.
-                caso escolha entrar em uma stream já existente, o cliente envia um pacote pedindo para ser adicionado a stream, e o servidor
-                responde com um pacote contendo o número da porta que o cliente deve se conectar para receber a stream.
-            </br>
-                Caso o cliente escolha criar uma nova stream, o cliente envia um pacote pedindo para criar uma nova stream, e o servidor cria uma nova stream
-                e envia para o cliente o numero da porta que ele deve se conectar para receber a stream.
-            </p>
-            <p>
-                Em ambos os casos o cliente envia um ACK para o servidor, e o servidor envia um ACK para o cliente.
-            </p>
+                <p>
+                    Na fase de handshake o cliente inicialmente escolhe entre criar uma nova stream ou se conectar a uma stream já existente.
+                    caso escolha entrar em uma stream já existente, o cliente envia um pacote pedindo para ser adicionado a stream, e o servidor
+                    responde com um pacote contendo o número da porta que o cliente deve se conectar para receber a stream.
+                </br>
+                    Caso o cliente escolha criar uma nova stream, o cliente envia um pacote pedindo para criar uma nova stream, e o servidor cria uma nova stream
+                    e envia para o cliente o numero da porta que ele deve se conectar para receber a stream.
+                </p>
+                <p>
+                    Em ambos os casos o cliente envia um ACK para o servidor, e o servidor envia um ACK para o cliente.
+                </p>
+                <img src="images/handshakeflowshart.png" alt="Handshake Flowshart" height="400px">
+
             <h3 id="streaming">Fase Streaming</h3>
                 <p>
                     Antes do inicio da fase de streaming o servidor gera os pacotes de audio com o tamanho de 1024 bytes, e os armazena em uma lista.
                     Ao iniciar a fase de streaming o servidor envia o primeiro pacote da lista para o cliente que por sua vez o coloca em um buffer de 
                     reprodução, é importante salientar que o servidor para de escutar apos o handshake, logo o cliente não envia um ACK para os pacotes de audio.
                 </p>
+                <img src="images/streamingflowshart.png" alt="Streaming Flowshart" height="400px">
+                
     </section>
     <section id="dificuldades">
         <h2>Dificuldades</h2>
@@ -94,6 +99,18 @@
                 não conseguimos realizar inicialmente a conexão entre o cliente e o servidor pois aparentemente o comando "ip addr" estava retornando apenas
                 um endereço para uso local na rede, e não o endereço IP da maquina na rede.
             </p>
+            <p>
+                Inicialmente haviamos utilizado apenas endereços IPV6 no programa, porém percebemos que os computadores dos laboratórios do departamento utilizavam
+                apenas o IPV4 (e utilizavam o hostname como o nome da maquina) por causa disso tivemos que adicionar a flag "-4" ao executar o MainClient.py e o MainServer.py
+                para informar que para essas maquinas usaremos o IPV4 o que muda algumas partes do processamento
+            </p>    
+    </section>
+    <section id="codigo-fonte">
+        <h2>Código Fonte</h2>
+            <p>O código fonte do programa pode ser encontrado <a href="src/">AQUI!</a></p>
+
+    
+
     </section>
 </body>
 
