@@ -2,14 +2,15 @@
 Creates and manages the client
 '''
 
-import signal
 import sys
+import signal
 
-from src.client import HandshakeClient
-from src.client import GlobalClient
-from src.utils import Logger
+from src.utils import Timer
 from src.network import Network
-
+from src.utils import Logger as L
+from src.client import Globals as G
+from src.client.handshake.register import Register
+from src.client.handshake.open_stream import OpenStream
 
 def main():
     '''
@@ -20,27 +21,46 @@ def main():
             print("Usage: python Client.py <Server Name> <Server Port> -j -4(optional)")
             exit()
 
-        Logger.start_logger('client', 'alsa')
-        Logger.set_logger('client')
-        Logger.LOGGER.info("Starting client")
+        L.start_logger('client', 'alsa')
+        L.set_logger('client')
+        L.LOGGER.info("Starting client")
 
-        signal.signal(signal.SIGINT, GlobalClient.SIGINT_HANDLER)
+        signal.signal(signal.SIGINT, G.CLOSE_CLIENT)
 
         server_name = sys.argv[1]
         server_port = sys.argv[2]
-        GlobalClient.SERVER = (server_name, server_port)
+        G.SERVER = (server_name, server_port)
 
-        GlobalClient.IPV4 = True if sys.argv[-1] == "-4" else False
+        ipv4 = True if sys.argv[-1] == "-4" else False
 
-        GlobalClient.NETWORK = Network.Network(GlobalClient.IPV4)
-        Logger.LOGGER.debug("Network interface created")
+        G.NETWORK = Network.Network(ipv4)
+        L.LOGGER.debug("Network interface created")
 
         option = 'join' if len(
             sys.argv) == 4 and sys.argv[3] == "-j" else 'new'
-        HandshakeClient.client_handshake(option)
+        client_handshake(option)
 
     except Exception as e:
-        Logger.LOGGER.error("An error occurred: %s", str(e))
+        L.LOGGER.error("An error occurred: %s", str(e))
+        G.CLOSE_CLIENT()
 
+def client_handshake(option):
+    '''
+    Perform the handshake with the server
+    '''
+    try:
+        #G.TIMERS.append(Timer.Timer(G.HANDSHAKE_TIMEOUT, G.CLOSE_CLIENT))
+        
+        if option == 'join':
+            L.LOGGER.info("Joining stream")
+            Register.register_to_stream()
+
+        else:
+            L.LOGGER.info("Opening a new stream")
+            OpenStream.open_stream_in_server()
+
+    except Exception as e:
+        L.LOGGER.error("An error occurred: %s", str(e))
+        raise Exception("Error while performing hansdhake with server")
 
 main()

@@ -4,9 +4,10 @@ Deals with forwarding packets and incoming packets callbacks
 import threading
 import queue
 
-from src.network import Socket
 from src.utils import Logger
 from src.utils import Utils
+from src.network import Socket
+from src.network import Utils as NU
 
 class Network:
     '''
@@ -26,6 +27,7 @@ class Network:
     
         except Exception as e:
             Logger.LOGGER.error("An error occurred: %s", str(e))
+            raise Exception("Couldn't start network")
 
     def handle_packets(self):
         '''
@@ -61,7 +63,7 @@ class Network:
         except:
             pass
 
-    def send(self, destination, packet, ipv4=False):
+    def send(self, destination, packet):
         '''
         Sends a packet to a destination
         '''
@@ -69,7 +71,7 @@ class Network:
             if self.stop_event.is_set():
                 return
 
-            self.socket.send(destination, packet, ipv4)
+            self.socket.send(destination, packet)
         except:
             pass
 

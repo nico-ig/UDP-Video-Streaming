@@ -6,8 +6,6 @@ import os
 import ctypes
 import subprocess
 
-from src.utils import Utils
-
 logger = None
 alsa_log_file = './logs/alsa/'
 
@@ -44,6 +42,7 @@ def set_error_handler(caller_logger):
 
     except Exception as e:
         logger.error(f'An error ocurred: {str(e)}')
+        raise Exception("Error setting alsa error handler")
 
 def py_error_handler(filename, line, function, err, fmt):
     '''
@@ -51,6 +50,7 @@ def py_error_handler(filename, line, function, err, fmt):
     '''
     try:
         logger.error(f'Error {err} supressed')
+
     except:
         pass
 

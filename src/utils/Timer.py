@@ -24,6 +24,7 @@ class Timer:
 
         except Exception as e:
             Logger.LOGGER.error("An error occurred: %s", str(e))
+            raise Exception("Couldn's create timer")
 
     def timer(self):
         '''
@@ -45,26 +46,17 @@ class Timer:
         '''
         Kick the timer, preventing it from expiring
         '''
-        try:
-            self.last_kick = int(time.time_ns())
-        except:
-            pass
+        self.last_kick = int(time.time_ns())
 
     def remaining_time(self):
         '''
         Gets the remaining time before timer expires
         '''
-        try:
-           return int(self.timeout - (time.time_ns() - self.last_kick)) 
-        except:
-            pass
+        return int(self.timeout - (time.time_ns() - self.last_kick)) 
 
     def stop(self):
         '''
         Stops the timer
         '''
-        try:
-            self.stop_event.set()
-            self.timer_thread.join()
-        except:
-            pass
+        self.stop_event.set()
+        self.timer_thread.join()

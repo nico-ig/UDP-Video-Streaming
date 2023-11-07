@@ -2,7 +2,8 @@
 Creates and manages the logger.
 
 Example: \\
-logger = Logger.start_logger('simpleExample') \\
+Logger.start_logger('simpleExample') \\
+logger = Logger.get_logger('simpleExample')
 logger.debug('debug message') \\
 logger.info('info message') \\
 logger.warning('warn message') \\
@@ -61,6 +62,7 @@ def start_logger(*names):
 
     except Exception as e:
         print(f"Error loading the YAML configuration: {e}")
+        raise Exception("Couldn't start logger")
 
 def set_logger(name):
     '''
