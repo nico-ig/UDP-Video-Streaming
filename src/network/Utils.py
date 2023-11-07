@@ -57,7 +57,7 @@ def is_valid_ip_address(address):
         ip_pattern = IPV4ADDR
     else:
         ip_pattern = IPV6ADDR
-
+    
     return bool(re.match(ip_pattern, address))
 
 def resolve_name(name):
@@ -67,7 +67,6 @@ def resolve_name(name):
     try:
         if name == '':
             return '0.0.0.0' if IPV4 == True else '::1'
-        
         if is_valid_ip_address(name):
             return name
 

@@ -24,7 +24,6 @@ class Network:
             self.host_ip, self.host_port = self.socket.get_address()
 
             self.handle_thread = Utils.start_thread(self.handle_packets)
-    
         except Exception as e:
             Logger.LOGGER.error("An error occurred: %s", str(e))
             raise Exception("Couldn't start network")

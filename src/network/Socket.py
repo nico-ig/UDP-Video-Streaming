@@ -15,17 +15,17 @@ class Socket:
     '''
     def __init__(self, host, port, recv_queue, ipv4=False, buffer_size=1024):
         try:
+            NU.IPV4 = ipv4
             self.ipv4 = ipv4
             self.host_name = host 
             self.recv_queue = recv_queue
             self.buffer_size = buffer_size
-
+    
             self.host_ip, self.host_port, self.local_socket = NU.creates_socket(host, int(port), ipv4)
 
             self.stop_event = threading.Event()
             self.receive_thread = Utils.start_thread(self.receive_packets)
             L.LOGGER.debug("Binded to address %s", (self.host_ip, self.host_port))
-
         except Exception as e:
             L.LOGGER.error("An error occurred: %s", str(e))
             raise Exception("Couldn't start socket")
