@@ -13,7 +13,7 @@ NETWORK = None              # Netowrk interface
 SERVER_PORT = 0 
 SERVER_NAME = ""
 
-BLOCKSIZE = 8192            # Size of audio stream block in stream packet
+BLOCKSIZE = 16384            # Size of audio stream block in stream packet
 AUDIO_FOLDER = 'audios'
 
 INTERVAL = 6_250_000        # Interval in ns between stream packets
