@@ -18,7 +18,7 @@ from src.server.handshake.register import Register as R
 
 lider = ()
 audio_ack = threading.Event()
-G.TIMERS.append(audio_ack)
+G.STOP_EVENTS.append(audio_ack)
 
 def open_new_stream(client):
     '''
@@ -38,8 +38,8 @@ def open_new_stream(client):
         G.CHILDREN[client].start()
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
-        raise Exception("Error starting new stream")
+        L.LOGGER.error("Error opening new stream: %s", str(e))
+        raise Exception("Couldn't open new stream")
 
 def new_stream(server, lider_in, ipv4, audio_titles, audio_packets):
     '''
@@ -62,13 +62,15 @@ def new_stream(server, lider_in, ipv4, audio_titles, audio_packets):
         S.AUDIO_TITLES = audio_titles
         S.AUDIO_PACKETS = audio_packets
 
+        G.TIMER = Timer.Timer(G.REGISTRATION_DURATION, R.registration_finished)
+        L.LOGGER.debug("Registration timer started")
+            
         send_stream_opened()
         wait_audio_ack()
         R.start_registration()
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
-        L.LOGGER.error("Couldn't start new stream")
+        L.LOGGER.error("Closing stream, error while starting new stream: %s", str(e))
         G.CLOSE_SERVER()
 
 def send_stream_opened():
@@ -83,12 +85,11 @@ def send_stream_opened():
         packet = mount_stream_opened_packet()
         G.NETWORK.send(lider, packet)
 
-        G.TIMER = Timer.Timer(G.RETRANSMIT_TIMEOUT, send_stream_opened)
+        G.TIMERS.append(Timer.Timer(G.RETRANSMIT_TIMEOUT, send_stream_opened))
         L.LOGGER.debug("Stream opened retransmit timer initiated")
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
-        send_stream_opened()
+        L.LOGGER.error("Error sending stream opened: %s", str(e))
 
 def wait_audio_ack():
     '''
@@ -96,16 +97,14 @@ def wait_audio_ack():
     '''
     try:
         G.NETWORK.register_callback(NU.AUDIO_ACK, parse_audio_ack)
-        G.TIMER = Timer.Timer(G.REGISTRATION_DURATION, R.registration_finished)
-        L.LOGGER.debug("Registration timer started")
-            
+
         audio_ack.wait()
         G.NETWORK.unregister_callback(NU.AUDIO_ACK)
         return
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
-        raise Exception("Error while waiting for audio ack")
+        L.LOGGER.error("Error while waiting for audio ack: %s", str(e))
+        raise Exception("Couldn't send audio ack")
 
 def mount_stream_opened_packet():
     '''
@@ -121,8 +120,8 @@ def mount_stream_opened_packet():
         return packet
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
-        raise Exception("Error mounting stream opened packet")
+        L.LOGGER.error("Error mounting stream opened packet: %s", str(e))
+        raise Exception("Couldn't open stream opened packet")
 
 def parse_audio_ack(payload, source):
     '''
@@ -144,4 +143,4 @@ def parse_audio_ack(payload, source):
         audio_ack.set()
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
+        L.LOGGER.error("Error while parsing audio ack: %s", str(e))

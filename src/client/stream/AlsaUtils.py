@@ -41,8 +41,8 @@ def set_error_handler(caller_logger):
         logger.debug(f'ALSA error function changed')
 
     except Exception as e:
-        logger.error(f'An error ocurred: {str(e)}')
-        raise Exception("Error setting alsa error handler")
+        logger.error(f'Error setting alsa error handler: {str(e)}')
+        raise Exception("Couldn't raise alsa error handler")
 
 def py_error_handler(filename, line, function, err, fmt):
     '''
@@ -68,6 +68,6 @@ def get_alsa_lib():
 
         return ctypes.CDLL(alsa_paths[0])
 
-    except:
-        raise FileNotFoundError('Alsa library not found')
-        
+    except Exception as e:
+        logger.error("Error getting alsa library file: %s", str(e))
+        raise FileNotFoundError("Couldn't get alsa library file")

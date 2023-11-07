@@ -14,14 +14,14 @@ def open_stream_in_server():
     Open a new stream in the server
     '''
     try:
-        L.LOGGER.debug("Oppening a new stream")
+        L.LOGGER.debug("Opening a new stream")
 
         send_stream_request()
         wait_stream_opened()
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
-        raise Exception("Error opening a new stream in server")
+        L.LOGGER.error("Error opening a new stream in server: %s", str(e))
+        raise Exception("Couldn't open a new stream in server")
 
 def send_stream_request():
     '''
@@ -39,8 +39,8 @@ def send_stream_request():
         L.LOGGER.debug("Stream request retransmit timer initiated")
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
-        send_stream_request()
+        L.LOGGER.error("Error sending stream request: %s", str(e))
+        raise Exception("Couldn't send stream request")
 
 def wait_stream_opened():
     '''
@@ -60,6 +60,5 @@ def wait_stream_opened():
         Register.register_to_stream()
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
-        G.NETWORK.unregister_callback(NU.STREAM_OPENED)
-        wait_stream_opened()
+        L.LOGGER.error("Error while waiting for stream to be opened: %s", str(e))
+        raise Exception("Couldn't finish waiting for stream to be opened")

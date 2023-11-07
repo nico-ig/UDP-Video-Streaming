@@ -29,7 +29,7 @@ def main():
         L.set_logger('server')
         L.LOGGER.info("Creating server")
 
-        signal.signal(signal.SIGINT, sigint_handler)
+        signal.signal(signal.SIGINT, G.CLOSE_SERVER)
 
         G.SERVER_NAME = sys.argv[1]
         G.SERVER_PORT = sys.argv[2]
@@ -42,8 +42,8 @@ def main():
         handshake()
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
-        sigint_handler()
+        L.LOGGER.error("Closing server, an error ocured: %s", str(e))
+        G.CLOSE_SERVER()
 
 def handshake():
     '''
@@ -59,7 +59,7 @@ def handshake():
             OS.open_new_stream(client)
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
+        L.LOGGER.error("Error while performing handshake: %s", str(e))
         handshake()
 
 def parse_new_client(data, source):
@@ -74,36 +74,7 @@ def parse_new_client(data, source):
         G.CLIENTS_QUEUE.put(source)
     
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
+        L.LOGGER.error("Error while parsing new client: %s", str(e))
         raise Exception("Couldn't parse new client")
-
-def sigint_handler(signum=0, frame=''):
-    '''
-    Stops the server when sigint is received
-    '''
-    try:
-        if L.LOGGER != None:
-            L.LOGGER.info("Sigint received")
-
-        if G.NETWORK != None:
-            G.NETWORK.stop()
-
-            for child in G.CHILDREN.values():
-                try:
-                    os.kill(child.pid, signal.SIGINT)
-                    child.terminate()
-                except:
-                    continue
-
-        for child in G.CHILDREN.values():
-            child.join()
-
-    except Exception as e:
-        if L.LOGGER != None:
-            L.LOGGER.error("An error occurred: %s", str(e))
-
-    finally:
-        if L.LOGGER != None:
-            L.LOGGER.info("Exitting")
 
 main()

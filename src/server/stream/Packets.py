@@ -46,7 +46,8 @@ def mount_single_audio_file_packet(blocksize, file_path):
             return (audio_config_packet, packets_array)
 
     except Exception as e:
-        raise e
+        L.LOGGER.error("Error while mouting packet for single file: %s", str(e))
+        raise Exception("Couldn't mount audio packet for single file")
 
 def mount_audio_packets(blocksize, folder_path):
     try:
@@ -63,5 +64,5 @@ def mount_audio_packets(blocksize, folder_path):
         return audios
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
-        raise Exception("Couldn't load audio packets")
+        L.LOGGER.error("Error while mouting audio packets: %s", str(e))
+        raise Exception("Couldn't mount audio packets")

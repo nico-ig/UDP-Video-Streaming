@@ -18,12 +18,16 @@ def insert(key, item):
     Adds a new segment, only if its it has an id bigger than the last 
     (avoids duplication and reproduction of a past segment if it arrives)
     '''
-    global last_key
-    if key > last_key and key not in keys_set:
-        with heap_lock:
-            heapq.heappush(heap, (key, item))
-            keys_set.add(key)
-            last_key = key
+    try:
+        global last_key
+        if key > last_key and key not in keys_set:
+            with heap_lock:
+                heapq.heappush(heap, (key, item))
+                keys_set.add(key)
+                last_key = key
+
+    except Exception as e:
+        raise e
 
 def remove():
     '''

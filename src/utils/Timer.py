@@ -6,7 +6,7 @@ import time
 import threading
 
 from src.utils import Utils
-from src.utils import Logger
+from src.utils import Logger as L
 
 class Timer:
     '''
@@ -23,8 +23,8 @@ class Timer:
             self.timer_thread = Utils.start_thread(self.timer)
 
         except Exception as e:
-            Logger.LOGGER.error("An error occurred: %s", str(e))
-            raise Exception("Couldn's create timer")
+            L.LOGGER.error("Error creating timer: %s", str(e))
+            raise Exception("Couldn't create timer")
 
     def timer(self):
         '''
@@ -40,7 +40,8 @@ class Timer:
                     break
 
         except Exception as e:
-            print(f"An error occurred: {str(e)}")
+            L.LOGGER.error(f"Error in timer callback: {str(e)}")
+            raise Exception("Couldn't execute timer callback")
         
     def kick(self):
         '''
@@ -52,11 +53,16 @@ class Timer:
         '''
         Gets the remaining time before timer expires
         '''
-        return int(self.timeout - (time.time_ns() - self.last_kick)) 
+        remaining_time =  int(self.timeout - (time.time_ns() - self.last_kick)) 
+        return 0 if remaining_time < 0 else remaining_time
 
     def stop(self):
         '''
         Stops the timer
         '''
-        self.stop_event.set()
-        self.timer_thread.join()
+        try:
+            self.stop_event.set()
+            self.timer_thread.join()
+
+        except Exception as e:
+            L.LOGGER.error(f"Error stoping timer")

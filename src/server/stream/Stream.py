@@ -33,7 +33,7 @@ def load_audio(blocksize, path):
         L.LOGGER.info("Available audios: %s", AUDIO_TITLES)
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
+        L.LOGGER.error("Error while loading audio packets: %s", str(e))
         raise Exception("Couldn't load audio packets")
 
 def start_streaming():
@@ -57,5 +57,5 @@ def start_streaming():
         G.CLOSE_SERVER()
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
-        raise Exception("Couldn't stream all packets to clients")
+        L.LOGGER.error("Closing server, error while start streaming: %s", str(e))
+        G.CLOSE_SERVER()

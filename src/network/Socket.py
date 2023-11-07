@@ -26,9 +26,10 @@ class Socket:
             self.stop_event = threading.Event()
             self.receive_thread = Utils.start_thread(self.receive_packets)
             L.LOGGER.debug("Binded to address %s", (self.host_ip, self.host_port))
+
         except Exception as e:
-            L.LOGGER.error("An error occurred: %s", str(e))
-            raise Exception("Couldn't start socket")
+            L.LOGGER.error("Error while starting socket instanse: %s", str(e))
+            raise Exception("Couldn't start socket instanse")
 
     def receive_packets(self):
         '''
@@ -44,11 +45,12 @@ class Socket:
                 self.recv_queue.put((packet_type, packet_payload, source[:2]))
 
                 L.LOGGER.debug('Packet received: source: %s, type: %d, payload len: %d', source[:2], packet_type, len(packet_payload))
+
             except BlockingIOError:
                 pass
 
             except Exception as e:
-                L.LOGGER.error("An error occurred: %s", str(e))
+                L.LOGGER.error("Error while receiving packets: %s", str(e))
 
 
     def send(self, destination, packet):
@@ -68,8 +70,8 @@ class Socket:
             L.LOGGER.debug('Packet send: destination: %s', destination)
             
         except Exception as e:
-            L.LOGGER.error("An error occurred: %s", str(e))
-            raise Exception("Couldn't send packet")
+            L.LOGGER.error("Error in socket while sending packet: %s", str(e))
+            raise Exception("Socket couldn't send packet")
 
     def get_address(self):
         '''
@@ -99,5 +101,5 @@ class Socket:
             self.local_socket.close()
 
         except Exception as e:
-            L.LOGGER.error("An error occurred: %s", str(e))
-            raise Exception("Error stopping socket")
+            L.LOGGER.error("Error stoping socket instanse: %s", str(e))
+            raise Exception("Couldn't stop socket instanse")

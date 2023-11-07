@@ -26,7 +26,7 @@ def CLOSE_CLIENT(signum=0, frame=''):
     Stops the client
     '''
     try:
-        Logger.LOGGER.info("Couldn't start stream, closing client")
+        Logger.LOGGER.info("Closing client")
 
         STOP_EVENT.set()
    
@@ -43,8 +43,7 @@ def CLOSE_CLIENT(signum=0, frame=''):
             event.set()
 
     except Exception as e:
-        Logger.LOGGER.error("An error occurred: %s", str(e))
+        Logger.LOGGER.error("Error while closing client: %s", str(e))
 
     finally:
         Logger.LOGGER.info("Exitting")
-        exit()

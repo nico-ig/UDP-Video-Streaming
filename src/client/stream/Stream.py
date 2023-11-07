@@ -28,8 +28,8 @@ def listen_to_stream():
         L.LOGGER.debug("Stream packets timer initiated")
 
         G.NETWORK.register_callback(NU.STREAM, P.parse_stream_packets)
-        alsa_logger = L.get_logger('alsa')
-        AlsaUtils.set_error_handler(alsa_logger)
+
+        try_to_change_alsa_error_handler()
 
         samplerate = AUDIO_SAMPLERATE
         channels = AUDIO_CHANNELS
@@ -45,8 +45,21 @@ def listen_to_stream():
         L.LOGGER.info("Player started")
         
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
-        raise Exception("Error while listening to stream")
+        L.LOGGER.error("CLosing client, error while listening to stream: %s", str(e))
+        G.CLOSE_CLIENT()
+
+def try_to_change_alsa_error_handler():
+    '''
+    Try to change alsa error handler, if not success alsa errors will
+    show on terminal
+    '''
+    try:
+        alsa_logger = L.get_logger('alsa')
+        AlsaUtils.set_error_handler(alsa_logger)
+
+    except Exception as e:
+        L.LOGGER.error("Couldn't change alsa error handler: %s", str(e))
+
 
 def callback(outdata, frames, time, status):
     '''
@@ -63,7 +76,7 @@ def callback(outdata, frames, time, status):
             outdata[:] = stream
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
+        L.LOGGER.error("Error in stream callback: %s", str(e))
 
     finally:
         if G.STOP_EVENT.is_set():

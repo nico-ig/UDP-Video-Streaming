@@ -4,9 +4,9 @@ Deals with forwarding packets and incoming packets callbacks
 import threading
 import queue
 
-from src.utils import Logger
 from src.utils import Utils
 from src.network import Socket
+from src.utils import Logger as L
 from src.network import Utils as NU
 
 class Network:
@@ -24,9 +24,10 @@ class Network:
             self.host_ip, self.host_port = self.socket.get_address()
 
             self.handle_thread = Utils.start_thread(self.handle_packets)
+
         except Exception as e:
-            Logger.LOGGER.error("An error occurred: %s", str(e))
-            raise Exception("Couldn't start network")
+            L.LOGGER.error("Error while starting network instanse: %s", str(e))
+            raise Exception("Couldn't start network instanse")
 
     def handle_packets(self):
         '''
@@ -39,8 +40,10 @@ class Network:
 
                 if packet_type in self.callbacks:
                     self.callbacks[packet_type](packet_data, source)
-        except:
-            pass
+
+        except Exception as e:
+            L.LOGGER.error(f"Error in network callback: {str(e)}")
+            raise Exception("Couldn't execute network callback")
 
     def register_callback(self, packet_type, function):
         '''
@@ -48,9 +51,11 @@ class Network:
         '''
         try:
             self.callbacks[packet_type] = function
-            Logger.LOGGER.debug("Callback %s registered for type %d", function.__name__, packet_type)
-        except:
-            pass
+            L.LOGGER.debug("Callback %s registered for type %d", function.__name__, packet_type)
+
+        except Exception as e:
+            L.LOGGER.error(f"Error registering network callback: {str(e)}")
+            raise Exception("Couldn't register network callback")
 
     def unregister_callback(self, packet_type):
         '''
@@ -58,9 +63,11 @@ class Network:
         '''
         try:
             del self.callbacks[packet_type]
-            Logger.LOGGER.debug("Callback unregistered for type %d", packet_type)
-        except:
-            pass
+            L.LOGGER.debug("Callback unregistered for type %d", packet_type)
+
+        except Exception as e:
+            L.LOGGER.error(f"Error unregistering network callback: {str(e)}")
+            raise Exception("Couldn't unregister network callback")
 
     def send(self, destination, packet):
         '''
@@ -71,19 +78,17 @@ class Network:
                 return
 
             self.socket.send(destination, packet)
-        except:
-            pass
+
+        except Exception as e:
+            L.LOGGER.error("Error in network while sending packet: %s", str(e))
+            raise Exception("Network couldn't send packet")
 
     def get_port(self):
         '''
         Gets the port associate with the network interface
         '''
-        try:
-            ip, port = self.socket.get_address()
-            return port
-        except:
-            pass
-
+        ip, port = self.socket.get_address()
+        return port
     
     def get_buffer_size(self):
         '''
@@ -110,4 +115,5 @@ class Network:
             self.socket.stop()
 
         except Exception as e:
-            Logger.LOGGER.error("An error occurred: %s", str(e))
+            L.LOGGER.error("Error stoping network instanse: %s", str(e))
+            raise Exception("Couldn't stop network instanse")

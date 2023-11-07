@@ -31,5 +31,4 @@ def parse_stream_packets(payload, source):
         #G.SERVER_TIMER.kick()
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
-        raise Exception("Error parsing stream packet")
+        L.LOGGER.error("Error parsing stream packet: %s", str(e))

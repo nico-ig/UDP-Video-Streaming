@@ -46,7 +46,7 @@ def CLOSE_SERVER(signum = 0, fram = ''):
             timer.stop()
  
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
+        L.LOGGER.error("Error while closing server: %s", str(e))
 
     finally:
         L.LOGGER.info("Exitting")

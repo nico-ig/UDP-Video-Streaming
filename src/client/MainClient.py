@@ -41,7 +41,7 @@ def main():
         client_handshake(option)
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
+        L.LOGGER.error("Closing client, an error ocured: %s", str(e))
         G.CLOSE_CLIENT()
 
 def client_handshake(option):
@@ -56,11 +56,10 @@ def client_handshake(option):
             Register.register_to_stream()
 
         else:
-            L.LOGGER.info("Opening a new stream")
             OpenStream.open_stream_in_server()
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
-        raise Exception("Error while performing hansdhake with server")
+        L.LOGGER.error("Error while performing handshake with server: %s", str(e))
+        raise Exception("Couldn't perform handshake with server")
 
 main()

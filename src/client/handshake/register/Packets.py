@@ -37,7 +37,6 @@ def parse_register_ack(payload, source):
         
     except Exception as e:
         L.LOGGER.error("An error occurred: %s", str(e))
-        raise Exception("Error while parsing register ack")
 
 def parse_audio_config(payload, source):
     '''
@@ -69,4 +68,3 @@ def parse_audio_config(payload, source):
 
     except Exception as e:
         L.LOGGER.error("An error occurred: %s", str(e))
-        raise Exception("Error while parsing audio config")

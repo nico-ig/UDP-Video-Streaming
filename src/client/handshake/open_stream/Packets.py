@@ -39,8 +39,7 @@ def parse_stream_opened(payload, source):
         L.LOGGER.info("Stream ack sent")
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
-        raise Exception(f'Error parsing stream opened packet')
+        L.LOGGER.error("Error parsing stream opened packet: %s", str(e))
         
 def parse_audios(payload):
     '''
@@ -58,12 +57,12 @@ def parse_audios(payload):
             
         if payload != b'':
             L.LOGGER(f'An error occurred: Audio title packet is not valid')
-            raise Exception(f'Error parsing audios')
+            raise Exception("Couldn't parse audios")
 
         return audio_titles
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
+        L.LOGGER.error("Error while parsing audios: %s", str(e))
         raise Exception(f'Error parsing audios')
 
 def get_audio_choice(audio_titles):
@@ -81,14 +80,20 @@ def get_audio_choice(audio_titles):
         print("Choose an audio ID to play it")
         print_available_audios(audio_titles)
 
-        input_list = select.select([sys.stdin], [], [], G.AUDIO_CHOICE_TIMEOUT)[0]
-        if input_list:
-            audio_id = int(sys.stdin.readline().strip())
-            print("You chose audio ID: " + str(audio_id))
+        try:
+            input_list = select.select([sys.stdin], [], [], G.AUDIO_CHOICE_TIMEOUT)[0]
 
-        else:
+            if input_list:
+                audio_id = int(sys.stdin.readline().strip())
+                print("You chose audio ID: " + str(audio_id))
+
+            else:
+                audio_id = 0
+                print("Timeout, using default audio ID: " + str(audio_id))
+
+        except:
             audio_id = 0
-            print("Timeout, using default audio ID: " + str(audio_id))
+            print("Invalid, using default audio ID: " + str(audio_id))
 
         if audio_id >= len(audio_titles):
             audio_id = 0
@@ -97,8 +102,8 @@ def get_audio_choice(audio_titles):
         L.LOGGER.info(f'Requested audio id: {audio_id}')
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
-        raise Exception(f'Error getting audio choice')
+        L.LOGGER.error("Error while getting audio choice: %s", str(e))
+        raise Exception("Couldn't get audio choice")
 
 def print_available_audios(audio_titles):
     '''
@@ -111,5 +116,5 @@ def print_available_audios(audio_titles):
             print(str(i) + " / " + audio_titles[i])
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
-        raise Exception(f'Error printing available audios')
+        L.LOGGER.error("Error printig available audios: %s", str(e))
+        raise Exception("COuldn't print available audios")

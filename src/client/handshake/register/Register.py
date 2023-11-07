@@ -23,8 +23,8 @@ def register_to_stream():
         prepare_to_listen_to_stream()
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
-        raise Exception("Error registering to stream")
+        L.LOGGER.error(f"Error registering to stream: {str(e)}")
+        raise Exception(f"Couldn't register to stream")
 
 def send_registration_packet():
     '''
@@ -42,8 +42,8 @@ def send_registration_packet():
         L.LOGGER.debug("Registration retransmit timer initiated")
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
-        send_registration_packet()
+        L.LOGGER.error("Error sending registration packet: %s", str(e))
+        raise Exception("Couldn't send registration packet")
     
 def wait_audio_config():
     '''
@@ -64,9 +64,7 @@ def wait_audio_config():
         L.LOGGER.info("Blocksize: %s", S.AUDIO_BLOCKSIZE)
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
-        G.NETWORK.unregister_callback(NU.AUDIO_CONFIG)
-        wait_audio_config()
+        L.LOGGER.error("Error while waiting for audio config: %s", str(e))
 
 def prepare_to_listen_to_stream():
     '''
@@ -92,9 +90,8 @@ def prepare_to_listen_to_stream():
         S.listen_to_stream()
         
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
-        G.NETWORK.unregister_callback(NU.REGISTER_ACK)
-        prepare_to_listen_to_stream()
+        L.LOGGER.error("Error while preparing for listening to stream: %s", str(e))
+        raise Exception("Couldn't start to listen to stream")
 
 def registration_finished():
     try:
@@ -105,4 +102,4 @@ def registration_finished():
         G.NETWORK.unregister_callback(NU.REGISTER_ACK)
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
+        L.LOGGER.error("Error while finishing registration: %s", str(e))

@@ -76,7 +76,7 @@ def resolve_name(name):
         return addrinfo[4][0]
 
     except Exception as e:
-        raise e
+        raise Exception(f"Couldn't resolve name: {str(e)}")
 
 def is_same_ip(ip1, ip2):
     '''
@@ -108,7 +108,7 @@ def parse_packet(packet):
         return packet_type, packet_payload
     
     except Exception as e:
-        raise e
+        raise Exception(f"Couldn't parse packet: {str(e)}")
 
 
 def creates_socket(host, port, ipv4):
@@ -127,7 +127,7 @@ def creates_socket(host, port, ipv4):
         return host_ip, host_port, local_socket
             
     except Exception as e:
-        raise e
+        raise Exception(f"Couldn't create socket: {str(e)}")
 
 def send_packet_to_clients(network, clients, packet, event=None):
     '''
@@ -141,4 +141,4 @@ def send_packet_to_clients(network, clients, packet, event=None):
             event.set()
 
     except Exception as e:
-        raise e
+        raise Exception(f"Couldn't send packet to clients: {str(e)}")

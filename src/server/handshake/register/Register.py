@@ -26,7 +26,7 @@ def start_registration():
             return
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
+        L.LOGGER.error("Error registering clients: %s", str(e))
         raise Exception("Couldn't register clients")
 
 def parse_new_registration(data, source):
@@ -41,6 +41,7 @@ def parse_new_registration(data, source):
         L.LOGGER.info("New client %s registered", source)
 
         packet = bytes([NU.REGISTER_ACK])
+        print(G.TIMER.remaining_time())
         packet += struct.pack('Q', G.TIMER.remaining_time())
         packet += struct.pack('Q', G.INTERVAL)
 
@@ -48,7 +49,7 @@ def parse_new_registration(data, source):
         L.LOGGER.info("Register ack sent to client %s", source)
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
+        L.LOGGER.error("Error parsing new registration: %s", str(e))
 
 def send_audio_config():
     '''
@@ -70,8 +71,7 @@ def send_audio_config():
         Timer.Timer(G.RETRANSMIT_TIMEOUT, send_audio_config)
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
-        send_audio_config()
+        L.LOGGER.error("Error while sending audio config: %s", str(e))
 
 def parse_audio_config_ack(payload, source):
     '''
@@ -84,7 +84,7 @@ def parse_audio_config_ack(payload, source):
         confirmed_clients.add(source)
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
+        L.LOGGER.error("Error parsing audio config ack: %s", str(e))
 
 def registration_finished():
     '''
@@ -104,4 +104,5 @@ def registration_finished():
         S.start_streaming()
 
     except Exception as e:
-        L.LOGGER.error("An error occurred: %s", str(e))
+        L.LOGGER.error("Closing server, error while finishing registration: %s", str(e))
+        G.CLOSE_SERVER()
