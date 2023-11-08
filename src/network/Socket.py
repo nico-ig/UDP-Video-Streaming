@@ -2,6 +2,7 @@
 Deals directly with the socket management
 '''
 
+import time
 import socket
 import threading
 
@@ -28,7 +29,6 @@ class Socket:
 
         except Exception as e:
             L.LOGGER.error("Error while starting socket instanse: %s", str(e))
-            raise Exception("Couldn't start socket instanse")
 
     def receive_packets(self):
         '''
@@ -52,25 +52,32 @@ class Socket:
                 L.LOGGER.error("Error while receiving packets: %s", str(e))
 
 
-    def send(self, destination, packet):
+    def send(self, packet, destination):
         '''
         Sends though the socket the packet to the destination
         '''
-        try:
-            if self.stop_event.is_set():
-                return
-            
-            destination_host, destination_port = destination
+        destination_host, destination_port = destination
 
-            destination_port = int(destination_port)
-            destination_ip = NU.resolve_name(destination_host)
+        destination_port = int(destination_port)
+        destination_ip = NU.resolve_name(destination_host)
 
-            self.local_socket.sendto(packet, (destination_ip, destination_port))
-            L.LOGGER.debug('Packet send: destination: %s', destination)
-            
-        except Exception as e:
-            L.LOGGER.error("Error in socket while sending packet: %s", str(e))
-            raise Exception("Socket couldn't send packet")
+        retries = 0
+        while retries < NU.MAX_RETRIES:
+            try:
+                if self.stop_event.is_set():
+                    return
+
+                retries += 1
+                self.local_socket.sendto(packet, (destination_ip, destination_port))
+                L.LOGGER.debug('Packet send: destination: %s', destination)
+                break
+
+            except Exception as e:
+                L.LOGGER.debug(f'Error in socket while sending packet: {str(e)}, retrying in: {NU.DELAY}s')
+                time.sleep(NU.DELAY)
+
+        if retries == NU.MAX_RETRIES:
+            L.LOGGER.debug(f'Max retries reached. Packet dropped')
 
     def get_address(self):
         '''
@@ -90,6 +97,12 @@ class Socket:
         '''
         self.buffer_size = new_size
 
+    def set_send_buffer_size(self, new_size):
+        '''
+        Changes the size of send buffer
+        '''
+        self.local_socket.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, new_size)
+
     def stop(self):
         ''' 
         Stops the socket
@@ -101,4 +114,3 @@ class Socket:
 
         except Exception as e:
             L.LOGGER.error("Error stoping socket instanse: %s", str(e))
-            raise Exception("Couldn't stop socket instanse")

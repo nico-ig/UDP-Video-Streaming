@@ -1,8 +1,8 @@
 '''
 Deals with forwarding packets and incoming packets callbacks
 '''
-import threading
 import queue
+import threading
 
 from src.utils import Utils
 from src.network import Socket
@@ -13,7 +13,7 @@ class Network:
     '''
     Creates and manages the network interface
     '''
-    def __init__(self, ipv4=False, host='', port=0):
+    def __init__(self, ipv4=False, host='::', port=0):
         try:
             NU.IPV4 = ipv4
 
@@ -80,7 +80,7 @@ class Network:
             if self.stop_event.is_set():
                 return
 
-            self.socket.send(destination, packet)
+            self.socket.send(packet, destination)
 
         except Exception as e:
             L.LOGGER.error("Error in network while sending packet: %s", str(e))
@@ -104,6 +104,12 @@ class Network:
         Changes the buffer size of incoming packets
         '''
         self.socket.set_buffer_size(new_size)
+
+    def set_send_buffer_size(self, new_size):
+        '''
+        Changes the size of send buffer
+        '''
+        self.socket.set_send_buffer_size(new_size)
 
 
     def stop(self):

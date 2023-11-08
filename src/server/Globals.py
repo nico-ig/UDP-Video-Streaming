@@ -16,7 +16,7 @@ SERVER_NAME = ""
 BLOCKSIZE = 16384            # Size of audio stream block in stream packet
 AUDIO_FOLDER = 'audios'
 
-INTERVAL = 6_250_000        # Interval in ns between stream packets
+INTERVAL = 10_000_000        # Interval in ns between stream packets
 RETRANSMIT_TIMEOUT = 3      # Time in s before retrasmiting a packet 
 REGISTRATION_DURATION = 30  # Duration of registration
 

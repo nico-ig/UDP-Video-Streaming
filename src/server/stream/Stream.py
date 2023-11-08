@@ -4,6 +4,7 @@ Sends stream packets to clients
 This should run in a separeted process from the main server
 '''
 
+from tarfile import BLOCKSIZE
 import threading
 
 from src.utils import Utils
@@ -47,6 +48,9 @@ def start_streaming():
         packet = AUDIO_PACKETS[AUDIO_ID][1][0]
         NU.send_packet_to_clients(G.NETWORK, G.CLIENTS, packet, stream_packet_sent)
         L.LOGGER.info(f"First audio stream packet sent, interval: {G.INTERVAL / 1e9}s")
+
+        G.NETWORK.set_send_buffer_size(G.BLOCKSIZE)
+        L.LOGGER.debug(f"Send buffer size increased to: {G.BLOCKSIZE}")
 
         for packet in AUDIO_PACKETS[AUDIO_ID][1][1:]:
             G.TIMERS.append(Timer.Timer(G.INTERVAL / 1e9, NU.send_packet_to_clients, (G.NETWORK, G.CLIENTS, packet, stream_packet_sent)))

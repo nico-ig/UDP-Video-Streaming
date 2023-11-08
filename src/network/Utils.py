@@ -7,6 +7,8 @@ import socket
 import struct
 
 IPV4 = False
+MAX_RETRIES = 5         # Max number of retries before dropping packet
+DELAY = 1 / 100         # Delay in seconds before trying to resend packet
 
 # Packets types and it's types value
 OPEN_STREAM_REQUEST = 1 # Client -> Server
