@@ -2,18 +2,19 @@
 Global values for the client
 '''
 
-import sys
 import threading
+
 from src.utils import Logger
+from src.client.stream import StreamHeap as SH
 
 SERVER = ()                 # Server address
 NETWORK = None              # Network interface
 
 TIMERS = []                 # TImers used by client
-SERVER_TIMER = None         # Timer dedicated to server 
+STREAM_TIMER = None         # Timer dedicated to server 
 
 SERVER_TIMEOUT = 10         # Time in seconds before timeouting when not receiving packets from server
-STREAM_TIMEOUT =  10        # How many intervals without receiving stream packets before timeouting  
+STREAM_TIMEOUT =  20        # How many intervals without receiving stream packets before timeouting  
 RETRANSMIT_TIMEOUT = 3      # Time in seconds before retransmiting a packet
 HANDSHAKE_TIMEOUT = 30      # Time in seconds to timeout if streaming is not started
 AUDIO_CHOICE_TIMEOUT = 5    # Time in seconds before chosing default audio id
@@ -33,8 +34,8 @@ def CLOSE_CLIENT(signum=0, frame=''):
         if NETWORK != None:
             NETWORK.stop()
 
-        if SERVER_TIMER != None:
-            SERVER_TIMER.stop()
+        if STREAM_TIMER != None:
+            STREAM_TIMER.stop()
             
         for timer in TIMERS:
             timer.stop()
@@ -46,4 +47,4 @@ def CLOSE_CLIENT(signum=0, frame=''):
         Logger.LOGGER.error("Error while closing client: %s", str(e))
 
     finally:
-        Logger.LOGGER.info("Exitting")
+        Logger.LOGGER.info("Exiting")

@@ -80,8 +80,12 @@ def prepare_to_listen_to_stream():
         L.LOGGER.info("Register ack received")
         G.NETWORK.unregister_callback(NU.STREAM_OPENED)
 
-        L.LOGGER.debug("Starting timer for remaining registration duration with %ss", P.REGISTER_DURATION)
+        G.TIMERS[0].stop()
+        del G.TIMERS[0]
+        L.LOGGER.debug("Stoped handshake timer")
+
         G.TIMERS.append(Timer.Timer(P.REGISTER_DURATION * 2, registration_finished))
+        L.LOGGER.debug("Timer for remaining registration duration started with %ss", P.REGISTER_DURATION)
 
         P.AUDIO_CONFIG.wait()
         if G.STOP_EVENT.is_set():
@@ -99,7 +103,12 @@ def registration_finished():
             L.LOGGER.info("Couldn't register to server")
             G.CLOSE_CLIENT()
         
-        #G.NETWORK.unregister_callback(NU.REGISTER_ACK)
+        # Unregister packets that for sure shouldn't be received anymore
+        G.NETWORK.unregister_callback(NU.REGISTER_ACK)
+        G.NETWORK.unregister_callback(NU.AUDIO_CONFIG)
+
+        G.STREAM_TIMER = Timer.Timer(G.STREAM_TIMEOUT, S.close_stream)
+        L.LOGGER.debug("Stream packets timer initiated")
 
     except Exception as e:
         L.LOGGER.error("Error while finishing registration: %s", str(e))

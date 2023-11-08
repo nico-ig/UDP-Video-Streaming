@@ -19,14 +19,32 @@ AUDIO_SAMPLERATE = 0
 AUDIO_CHANNELS = 0
 AUDIO_BLOCKSIZE = 0
 
+def close_stream():
+    '''
+    Closes the stream in case server doesn't send anything for too long
+    '''
+    if G.STREAM_TIMER != None:
+        # If still has packets to play, finish playing them and gives server
+        # more time to send the remaining packets
+        if SH.is_empty() == False:
+            G.STREAM_TIMER.stop()
+            G.STREAM_TIMER = Timer.Timer(G.STREAM_TIMEOUT, close_stream)
+            return
+            
+        else:
+            L.LOGGER.info(f"Stream packets lost: {SH.get_missing_keys_cnt()}")
+            L.LOGGER.info(f"Stream packets out of order: {SH.get_out_of_order_cnt()}")
+
+    else:
+        L.LOGGER.info(f"Stream didn't start")
+
+    G.CLOSE_CLIENT()
+
 def listen_to_stream():
     '''
     Start the stream player
     '''
     try:
-        #G.SERVER_TIMER = Timer.Timer(G.STREAM_TIMEOUT / 1e9, G.CLOSE_CLIENT)
-        L.LOGGER.debug("Stream packets timer initiated")
-
         G.NETWORK.register_callback(NU.STREAM, P.parse_stream_packets)
 
         try_to_change_alsa_error_handler()
@@ -45,8 +63,8 @@ def listen_to_stream():
         L.LOGGER.info("Player started")
         
     except Exception as e:
-        L.LOGGER.error("CLosing client, error while listening to stream: %s", str(e))
-        G.CLOSE_CLIENT()
+        L.LOGGER.error("Error while listening to stream: %s", str(e))
+        close_stream()
 
 def try_to_change_alsa_error_handler():
     '''

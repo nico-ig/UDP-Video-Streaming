@@ -28,7 +28,9 @@ def parse_stream_packets(payload, source):
         SH.insert(seq, payload[8:])
 
         STREAM_STARTED.set()
-        #G.SERVER_TIMER.kick()
+
+        if G.STREAM_TIMER != None:
+            G.STREAM_TIMER.kick()
 
     except Exception as e:
         L.LOGGER.error("Error parsing stream packet: %s", str(e))

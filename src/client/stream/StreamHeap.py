@@ -10,7 +10,9 @@ import threading
 
 heap = []
 keys_set = set()
-last_key = -1      
+out_of_order = 0
+expected_next = -1
+last_played_key = -1      
 heap_lock = threading.Lock()
 
 def insert(key, item):
@@ -19,12 +21,18 @@ def insert(key, item):
     (avoids duplication and reproduction of a past segment if it arrives)
     '''
     try:
-        global last_key
-        if key > last_key and key not in keys_set:
-            with heap_lock:
-                heapq.heappush(heap, (key, item))
-                keys_set.add(key)
-                last_key = key
+        global last_played_key, expected_next, out_of_order
+        if key not in keys_set:
+            keys_set.add(key)
+
+            if key != expected_next:
+                out_of_order += 1                                
+            expected_next = key + 1
+
+            if key > last_played_key:
+                with heap_lock:
+                    heapq.heappush(heap, (key, item))
+                    last_played_key = key
 
     except Exception as e:
         raise e
@@ -46,3 +54,12 @@ def remove():
 
     finally:
         return (key, segment)
+
+def get_missing_keys_cnt():
+    return last_key + 1 - len(keys_set)
+
+def get_out_of_order_cnt():
+    return out_of_order
+
+def is_empty():
+    return len(heap) == 0

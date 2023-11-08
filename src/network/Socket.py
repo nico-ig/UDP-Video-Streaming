@@ -70,7 +70,7 @@ class Socket:
                 retries += 1
                 self.local_socket.sendto(packet, (destination_ip, destination_port))
                 L.LOGGER.debug('Packet send: destination: %s', destination)
-                break
+                return
 
             except Exception as e:
                 L.LOGGER.debug(f'Error in socket while sending packet: {str(e)}, retrying in: {NU.DELAY}s')

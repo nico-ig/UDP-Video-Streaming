@@ -1,5 +1,6 @@
 import queue
 import threading
+import multiprocessing
 
 from src.utils import Logger as L
 
@@ -29,7 +30,10 @@ def CLOSE_SERVER(signum = 0, fram = ''):
     Callback function to stop the stream when sigint is received
     '''
     try:
-        L.LOGGER.info("Closing server")
+        if multiprocessing.current_process().name == 'MainProcess':
+            L.LOGGER.info("Closing server")
+        else:
+            L.LOGGER.info("Closing stream")
 
         STOP_EVENT.set()
 
@@ -46,8 +50,15 @@ def CLOSE_SERVER(signum = 0, fram = ''):
             timer.stop()
  
     except Exception as e:
-        L.LOGGER.error("Error while closing server: %s", str(e))
+        if multiprocessing.current_process().name == 'MainProcess':
+            L.LOGGER.error("Error while closing server: %s", str(e))
+        else:
+            L.LOGGER.error("Error while closing stream: %s", str(e))
 
     finally:
-        L.LOGGER.info("Exitting")
+        if multiprocessing.current_process().name == 'MainProcess':
+            L.LOGGER.info("Exiting server")
+        else:
+            L.LOGGER.info("Exiting stream")
+
         exit()

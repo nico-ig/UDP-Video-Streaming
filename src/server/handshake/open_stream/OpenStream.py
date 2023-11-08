@@ -99,6 +99,8 @@ def wait_audio_ack():
         G.NETWORK.register_callback(NU.AUDIO_ACK, parse_audio_ack)
 
         audio_ack.wait()
+
+        # Not necessary anymore
         G.NETWORK.unregister_callback(NU.AUDIO_ACK)
         return
 

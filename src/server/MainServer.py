@@ -22,8 +22,8 @@ def main():
             print("Usage: python Server.py <hostname> <port> -i <interval ns(optional>) -4")
             exit()
 
-        if len(sys.argv) > 3 and sys.argv[3] == 'i':
-            S.INTERVAL = sys.argv[4]
+        if len(sys.argv) > 3 and sys.argv[3] == '-i':
+            G.INTERVAL = int(sys.argv[4])
 
         L.start_logger('server')
         L.set_logger('server')

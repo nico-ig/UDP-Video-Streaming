@@ -17,7 +17,7 @@ AUDIO_ACK = 3           # Client -> Server
 REGISTER = 4            # Client -> Server
 REGISTER_ACK = 5        # Server -> Client
 AUDIO_CONFIG = 6        # Server -> Client
-AUDIO_CONFIG_ACK = 7    # Server -> Client
+AUDIO_CONFIG_ACK = 7    # Client -> Server
 STREAM = 8              # Server -> Client
 
 # Regex for ipv4 and ipv6 addressess

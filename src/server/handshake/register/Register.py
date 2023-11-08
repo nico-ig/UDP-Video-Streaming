@@ -41,7 +41,6 @@ def parse_new_registration(data, source):
         L.LOGGER.info("New client %s registered", source)
 
         packet = bytes([NU.REGISTER_ACK])
-        print(G.TIMER.remaining_time())
         packet += struct.pack('Q', G.TIMER.remaining_time())
         packet += struct.pack('Q', G.INTERVAL)
 

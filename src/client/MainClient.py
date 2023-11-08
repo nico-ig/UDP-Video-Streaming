@@ -49,7 +49,7 @@ def client_handshake(option):
     Perform the handshake with the server
     '''
     try:
-        #G.TIMERS.append(Timer.Timer(G.HANDSHAKE_TIMEOUT, G.CLOSE_CLIENT))
+        G.TIMERS.append(Timer.Timer(G.HANDSHAKE_TIMEOUT, G.CLOSE_CLIENT))
         
         if option == 'join':
             L.LOGGER.info("Joining stream")

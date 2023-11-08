@@ -62,7 +62,6 @@ class Timer:
         '''
         try:
             self.stop_event.set()
-            self.timer_thread.join()
 
         except Exception as e:
-            L.LOGGER.error(f"Error stoping timer")
+            L.LOGGER.error(f"Error stoping timer: {str(e)}")

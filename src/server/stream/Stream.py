@@ -4,7 +4,6 @@ Sends stream packets to clients
 This should run in a separeted process from the main server
 '''
 
-from tarfile import BLOCKSIZE
 import threading
 
 from src.utils import Utils
