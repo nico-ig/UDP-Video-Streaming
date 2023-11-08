@@ -32,6 +32,7 @@ def main():
         G.SERVER = (server_name, server_port)
 
         ipv4 = True if sys.argv[-1] == "-4" else False
+        print(sys.argv[-1])
 
         G.NETWORK = Network.Network(ipv4)
         L.LOGGER.debug("Network interface created")
