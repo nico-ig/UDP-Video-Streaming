@@ -42,7 +42,6 @@ def set_error_handler(caller_logger):
 
     except Exception as e:
         logger.error(f'Error setting alsa error handler: {str(e)}')
-        raise Exception("Couldn't raise alsa error handler")
 
 def py_error_handler(filename, line, function, err, fmt):
     '''

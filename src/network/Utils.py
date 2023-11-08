@@ -60,6 +60,12 @@ def is_valid_ip_address(address):
     
     return bool(re.match(ip_pattern, address))
 
+def get_wildchar_addr():
+    '''
+    Gets the ip address to listen to all avaliable addressess
+    '''
+    return '0.0.0.0' if IPV4 == True else '::'
+
 def resolve_name(name):
     '''
     Gets the ipv6 address for a given name

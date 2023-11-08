@@ -99,7 +99,7 @@ def registration_finished():
             L.LOGGER.info("Couldn't register to server")
             G.CLOSE_CLIENT()
         
-        G.NETWORK.unregister_callback(NU.REGISTER_ACK)
+        #G.NETWORK.unregister_callback(NU.REGISTER_ACK)
 
     except Exception as e:
         L.LOGGER.error("Error while finishing registration: %s", str(e))

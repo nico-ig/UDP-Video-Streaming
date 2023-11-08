@@ -15,7 +15,6 @@ class Socket:
     '''
     def __init__(self, host, port, recv_queue, ipv4=False, buffer_size=1024):
         try:
-            NU.IPV4 = ipv4
             self.ipv4 = ipv4
             self.host_name = host 
             self.recv_queue = recv_queue

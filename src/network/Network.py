@@ -15,11 +15,14 @@ class Network:
     '''
     def __init__(self, ipv4=False, host='', port=0):
         try:
+            NU.IPV4 = ipv4
+
             self.stop_event = threading.Event()
             self.callbacks = {}
             self.packet_queue = queue.Queue()
             self.packet_received = threading.Event()
-
+            
+            host = host if host != '' else NU.get_wildchar_addr()
             self.socket = Socket.Socket(host, port, self.packet_queue, ipv4)
             self.host_ip, self.host_port = self.socket.get_address()
 
